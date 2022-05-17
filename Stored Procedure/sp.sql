@@ -1668,3 +1668,793 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 END //
 DELIMITER ;
 
+
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLListing(
+_OPERATION VARCHAR(20),
+_AssetID INT,
+_ExchangeID INT,
+_ExchangeAssetTicker VARCHAR(20),
+_ExchangeAssetName VARCHAR(100),
+_ID BIGINT(16) DEFAULT 1,
+_IsAvailable TINYINT DEFAULT NULL,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 INT = 0;
+        v_del_count2 INT = 0;
+       
+        BEGIN
+            SELECT Count(*) FROM Listing WHERE AssetID=_AssetID and ExchangeID=_ExchangeID and ExchangeAssetTicker=_ExchangeAssetTicker into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Listing( AssetID, ExchangeID,ExchangeAssetTicker,ExchangeAssetName, CreateUser, LastEditUser, IsActive, CreateTime, LastEditTime)
+                    values( _AssetID,_ExchangeID,_ExchangeAssetTicker,_ExchangeAssetName,_CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM Listing WHERE AssetID=_AssetID and ExchangeID=_ExchangeID and ExchangeAssetTicker=_ExchangeAssetTicker  into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Listing SET LastEditUser=_LastEditUser, IsActive=_IsActive, LastEditTime=v_date WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				
+                SELECT Count(*) FROM Asset WHERE ID=_AssetID into v_del_count1;
+                SELECT Count(*) FROM Exchange WHERE ID=_ExchangeID into v_del_count2;
+                
+                IF(v_del_count1 =0 and v_del_count2 =0) Then
+					DELETE FROM Listing WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Exchange field (ExchangeID,Id)";
+				
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLLog4NetLog(
+_OPERATION VARCHAR(20),
+_Date DATETIME,
+_Thread VARCHAR(255),
+_Level VARCHAR(50),
+_Logger VARCHAR(255),
+_Message VARCHAR(4000),
+_ID BIGINT(16) DEFAULT 1,
+_Exception VARCHAR(2000) DEFAULT NULL)RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_id BIGINT(16) =  _ID;
+       
+        BEGIN
+            SELECT Count(*) FROM Log4NetLog WHERE ID=_ID into v_count;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Log4NetLog( Date,Thread, Level,Logger,Message, Exception)
+                    values( _Date,_Thread, _Level,_Logger,_Message, _Exception);
+					COMMIT;
+                    SELECT ID FROM Log4NetLog WHERE Date=_Date and Thread=_Thread and Level=_Level and Logger=_Logger and Message=_Message into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Log4NetLog SET Date=_Date, Thread=_Thread, Level=_Level, Logger=_Logger, Message=_Message , Exception=_Exception WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				
+                DELETE FROM Log4NetLog WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLOutstandingSupply(
+_OPERATION VARCHAR(20),
+_OutstandingSupply DECIMAL(18, 0),
+_AssetID BIGINT(16),
+_ProcessID BIGINT(16),
+_ID BIGINT(16) DEFAULT 1,
+_IsActive TINYINT DEFAULT 1,
+_Reviewed TINYINT DEFAULT NULL)RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_id BIGINT(16) =  _ID;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+       
+        BEGIN
+            SELECT Count(*) FROM OutstandingSupply WHERE ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO OutstandingSupply( OutstandingSupply, AssetID, ProcessID, CollectedTimeStamp, IsActive, Reviewed)
+                    values( _OutstandingSupply,_AssetID, _ProcessID,v_date,_IsActive, _Reviewed);
+					COMMIT;
+                    SELECT ID FROM OutstandingSupply WHERE OutstandingSupply=_OutstandingSupply and AssetID=_AssetID and ProcessID=_ProcessID and CollectedTimeStamp=v_date and IsActive=_IsActive into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE OutstandingSupply SET OutstandingSupply=_OutstandingSupply, AssetID=_AssetID, ProcessID=_ProcessID, CollectedTimeStamp=v_date, IsActive=_IsActive , Reviewed=_Reviewed WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				
+                DELETE FROM OutstandingSupply WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLPair(
+_OPERATION VARCHAR(20),
+_AssetID INT,
+_QuoteAssetID INT,
+_DARName VARCHAR(20),
+_ID BIGINT(16) DEFAULT 1,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_id BIGINT(16) =  _ID;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_del_count1 INT = 0;
+        v_del_count2 INT = 0;
+       
+        BEGIN
+            SELECT Count(*) FROM Pair WHERE DARName=_DARName into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Pair( AssetID, QuoteAssetID, DARName, CreateUser, LastEditUser, IsActive, CreateTime, LastEditTime)
+                    values( _AssetID,_QuoteAssetID, _DARName,_CreateUser,_LastEditUser,_IsActive, v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM Pair WHERE DARName=_DARName into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Pair SET AssetID=_AssetID, QuoteAssetID=_QuoteAssetID, LastEditUser=_LastEditUser, LastEditTime=v_date, IsActive=_IsActive WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				SELECT Count(*) FROM Asset WHERE ID=_AssetID into v_del_count1;
+                SELECT Count(*) FROM Asset WHERE ID=_QuoteAssetID into v_del_count2;
+				
+                IF(v_del_count1 = 0 and v_del_count2 =0) Then
+					DELETE FROM Pair WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (QuoteAssetID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLProcess(
+_OPERATION VARCHAR(20),
+_Name VARCHAR(255),
+_Description VARCHAR(500),
+_ID BIGINT(16) DEFAULT 1,
+_Lookback INT DEFAULT NULL,
+_Frequency INT DEFAULT NULL,
+_LookbackUnit VARCHAR(20) DEFAULT NULL,
+_FrequencyUnit VARCHAR(20) DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_id BIGINT(16) =  _ID;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_del_count1 INT = 0;
+        v_del_count2 INT = 0;
+       
+        BEGIN
+            SELECT Count(*) FROM Process WHERE Name=_Name into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Process( Name, Description, Lookback, Frequency, LookbackUnit, FrequencyUnit, CreateUser, LastEditUser, IsActive, CreateTime, LastEditTime)
+                    values( _Name, _Description, _Lookback, _Frequency, _LookbackUnit, _FrequencyUnit, _CreateUser, _LastEditUser, _IsActive, v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM Process WHERE Name=_Name into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Process SET Description=_Description, Lookback=_Lookback, Frequency=_Frequency, LookbackUnit=_LookbackUnit, FrequencyUnit=_FrequencyUnit , LastEditUser=_LastEditUser, LastEditTime=v_date, IsActive=_IsActive WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				DELETE FROM Process WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLRoleAppModule(
+_OPERATION VARCHAR(20),
+_AppModuleId INT,
+_RoleId VARCHAR(128),
+_ID BIGINT(16) DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_id BIGINT(16) =  _ID;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_del_count1 INT = 0;
+        v_del_count2 INT = 0;
+       
+        BEGIN
+            SELECT Count(*) FROM RoleAppModule WHERE AppModuleId=_AppModuleId and RoleId=_RoleId into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO RoleAppModule( AppModuleId, RoleId, CreateUser, LastEditUser, CreateTime, LastEditTime)
+                    values( _AppModuleId,_RoleId, _CreateUser, _LastEditUser, v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM RoleAppModule WHERE AppModuleId=_AppModuleId and RoleId=_RoleId into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE RoleAppModule SET LastEditUser=_LastEditUser, LastEditTime=v_date WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			
+            SELECT Count(*) FROM AppModule WHERE ID=_AppModuleId into v_del_count1;
+			SELECT Count(*) FROM RoleAppModule WHERE ID=_RoleId into v_del_count2;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				IF(v_del_count1 = 0 and v_del_count2 =0) Then
+					DELETE FROM RoleAppModule WHERE ID=_ID;
+					COMMIT;
+                    ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table AppModule field (AppModuleId,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table RoleAppModule field (RoleId,Id)";
+				END IF;
+				
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLSDataType(
+_OPERATION VARCHAR(20),
+_Name VARCHAR(100),
+_DisplayName VARCHAR(250) ,
+_ID BIGINT(16) DEFAULT 1,
+_Description VARCHAR(250) DEFAULT NULL,
+_ParentTypeID INT DEFAULT NULL,
+_SqlDataType VARCHAR(100) DEFAULT NULL,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 INT = 0;
+       
+        BEGIN
+            SELECT Count(*) FROM SDataType WHERE DisplayName=_DisplayName or Name=_Name into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO SDataType( Name,DisplayName,Description,ParentTypeID,SqlDataType, CreateUser, LastEditUser, CreateTime, LastEditTime)
+                    values( _Name,_DisplayName,_Description,_ParentTypeID,_SqlDataType,_CreateUser,_LastEditUser,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM SDataType WHERE DisplayName=_DisplayName and Name=_Name into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE SDataType SET Description=_Description,ParentTypeID=_ParentTypeID,SqlDataType=_SqlDataType,
+                        LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				
+                SELECT Count(*) FROM SDataType WHERE ID=_ ParentTypeID into v_del_count1;
+                
+                IF(v_del_count1 =0 ) Then
+					DELETE FROM SDataType WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SDataType field (ParentTypeID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLSEntity(
+_OPERATION VARCHAR(20),
+_CategoryID INT,
+_Name VARCHAR(100),
+_DisplayName VARCHAR(250),
+_ID BIGINT(16) DEFAULT 1,
+_Description VARCHAR(250) DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 INT = 0;
+       
+        BEGIN
+            SELECT Count(*) FROM SEntity WHERE DisplayName=_DisplayName or Name=_Name into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO SEntity( CategoryID,Name,DisplayName,Description, CreateUser, LastEditUser, IsActive,CreateTime, LastEditTime)
+                    values( _CategoryID,_Name,_DisplayName,_Description, _CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM SEntity WHERE DisplayName=_DisplayName and Name=_Name into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE SEntity SET CategoryID=_CategoryID,Name=_Name,DisplayName=_DisplayName,Description=_Description, IsActive=_IsActive,
+                        LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				
+                SELECT Count(*) FROM SEntityCategory WHERE ID=_CategoryID into v_del_count1;
+                
+                IF(v_del_count1 =0 ) Then
+					DELETE FROM SEntity WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEntityCategory field (CategoryID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLSEntityAttribute(
+_OPERATION VARCHAR(20),
+_EntityID INT,
+_Name VARCHAR(100),
+_DisplayName VARCHAR(250),
+_DataTypeID INT,
+_ID BIGINT(16) DEFAULT 1,
+_EnumerationID INT DEFAULT NULL,
+_Description VARCHAR(250) DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 INT = 0;
+        v_del_count2 INT = 0;
+        v_del_count3 INT = 0;
+       
+        BEGIN
+            SELECT Count(*) FROM SEntityAttribute WHERE (EntityID=_EntityID and DisplayName=_DisplayName )or (EntityID=_EntityID and Name=_Name) into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO SEntityAttribute( EntityID,Name,DisplayName,DataTypeID,EnumerationID,Description, CreateUser, LastEditUser, IsActive,CreateTime, LastEditTime)
+                    values( _EntityID,_Name,_DisplayName,_DataTypeID,_EnumerationID, _Description,_CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM SEntityAttribute WHERE (EntityID=_EntityID and DisplayName=_DisplayName )or (EntityID=_EntityID and Name=_Name) into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE SEntityAttribute SET EntityID=_EntityID,Name=_Name,DisplayName=_DisplayName,DataTypeID=_DataTypeID,EnumerationID=_EnumerationID,
+                        Description=_Description, IsActive=_IsActive,LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				
+                SELECT Count(*) FROM SDataType WHERE ID=_DataTypeID into v_del_count1;
+                SELECT Count(*) FROM SEntity WHERE ID=_EntityID into v_del_count2;
+                SELECT Count(*) FROM SEnumeration WHERE ID=_EnumerationID into v_del_count3;
+                
+                IF(v_del_count1 =0 and  v_del_count2 =0 and v_del_count3 =0 ) Then
+					DELETE FROM SEntityAttribute WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SDataType field (DataTypeID,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEntity field (EntityID,Id)";
+				ELSEIF v_del_count3 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEnumeration field (EnumerationID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLSEntityCategory(
+_OPERATION VARCHAR(20),
+_Name VARCHAR(100),
+_DisplayName VARCHAR(250),
+_ID BIGINT(16) DEFAULT 1,
+_Description VARCHAR(250) DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+       
+        BEGIN
+            SELECT Count(*) FROM SEntityCategory WHERE Name=_Name and DisplayName=_DisplayName  into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO SEntityCategory( Name,DisplayName,Description, CreateUser, LastEditUser, IsActive,CreateTime, LastEditTime)
+                    values( _Name,_DisplayName, _Description,_CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM SEntityCategory WHERE Name=_Name and DisplayName=_DisplayName into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE SEntityCategory SET Name=_Name,DisplayName=_DisplayName, Description=_Description, IsActive=_IsActive,
+                        LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                DELETE FROM SEntityCategory WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLSEnumeration(
+_OPERATION VARCHAR(20),
+_Name VARCHAR(100),
+_DisplayName VARCHAR(250),
+_ID BIGINT(16) DEFAULT 1,
+_LookupName VARCHAR(100) DEFAULT NULL,
+_Description VARCHAR(250) DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_IsSystem TINYINT DEFAULT 0,
+_IsPublic TINYINT DEFAULT 0,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+       
+        BEGIN
+            SELECT Count(*) FROM SEnumeration WHERE Name=_Name and DisplayName=_DisplayName  into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO SEnumeration( Name, DisplayName, Description, IsSystem, IsPublic, LookupName, CreateUser, LastEditUser, IsActive, CreateTime, LastEditTime)
+                    values( _Name,_DisplayName, _Description,_IsSystem,_IsPublic,_LookupName,_CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM SEnumeration WHERE Name=_Name and DisplayName=_DisplayName into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE SEnumeration SET Name=_Name,DisplayName=_DisplayName, Description=_Description,IsSystem=_IsSystem, IsPublic=_IsPublic, LookupName=_LookupName,
+                        IsActive=_IsActive,LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                DELETE FROM SEnumeration WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLSEnumerationValue(
+_OPERATION VARCHAR(20),
+_EnumerationID INT,
+_ValueID INT,
+_SortOrder INT,
+_Name VARCHAR(100),
+_DisplayName VARCHAR(250),
+_ID BIGINT(16) DEFAULT 1,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM SEnumerationValue WHERE (Name=_Name and EnumerationID=_EnumerationID) or 
+            (DisplayName=_DisplayName and EnumerationID=_EnumerationID) or 
+            (SortOrder=_SortOrder and EnumerationID=_EnumerationID) or
+            (ValueID=_ValueID and EnumerationID=_EnumerationID) into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO SEnumerationValue( Name, DisplayName, EnumerationID, ValueID, SortOrder, CreateUser, LastEditUser, IsActive, CreateTime, LastEditTime)
+                    values( _Name,_DisplayName, _EnumerationID,_ValueID,_SortOrder,_CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM SEnumerationValue WHERE (Name=_Name and EnumerationID=_EnumerationID) or 
+            (DisplayName=_DisplayName and EnumerationID=_EnumerationID) or 
+            (SortOrder=_SortOrder and EnumerationID=_EnumerationID) or
+            (ValueID=_ValueID and EnumerationID=_EnumerationID)into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE SEnumerationValue SET Name=_Name,DisplayName=_DisplayName, EnumerationID=_EnumerationID,ValueID=_ValueID, SortOrder=_SortOrder,
+                        IsActive=_IsActive,LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                SELECT Count(*) FROM SEnumeration WHERE ID=_EnumerationID into v_del_count1;
+                
+                IF(v_del_count1 =0 ) Then
+					DELETE FROM SEnumerationValue WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEnumeration field (EnumerationID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLServingList(
+_OPERATION VARCHAR(20),
+_ProcessID INT,
+_Start DATETIME,
+_ID BIGINT(16) DEFAULT 1,
+_End DATETIME DEFAULT NULL,
+_PairID INT DEFAULT NULL,
+_SourceID INT DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM ServingList WHERE ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO ServingList( ProcessID, Start, End, PairID, SourceID, CreateUser, LastEditUser, IsActive, CreateTime, LastEditTime)
+                    values( _ProcessID, _Start, _End, _PairID, _SourceID,_CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM ServingList WHERE ProcessID=_ProcessID and Start=_Start into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE ServingList SET ProcessID=_ProcessID,Start=_Start, End=_End,PairID=_PairID, SourceID=_SourceID,
+                        IsActive=_IsActive,LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                SELECT Count(*) FROM Pair WHERE ID=_PairID into v_del_count1;
+                
+                IF(v_del_count1 =0 ) Then
+					DELETE FROM ServingList WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Pair field (PairID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLServingListSnapshot(
+_OPERATION VARCHAR(20),
+_SnapshotName VARCHAR(500),
+_SnapshotVersion INT,
+_ProcessName VARCHAR(255),
+_PairName VARCHAR(20),
+_ID BIGINT(16) DEFAULT 0,
+_ProcessId INT DEFAULT NULL,
+_PairId INT DEFAULT NULL,
+_AssetName VARCHAR(100) DEFAULT NULL,
+_AssetId INT DEFAULT NULL,
+_Exchange VARCHAR(100) DEFAULT NULL,
+_ExchangeId INT DEFAULT NULL,
+_ExchangePairName VARCHAR(20) DEFAULT NULL,
+_AssetTicker VARCHAR(20) DEFAULT NULL,
+_ExchangeVettingStatus VARCHAR(200) DEFAULT NULL,
+_ExchangeVettingStatusCode INT DEFAULT NULL,
+_AssetTierDescription VARCHAR(200) DEFAULT NULL,
+_AssetTierCode INT DEFAULT NULL,
+_Start DATETIME DEFAULT NULL,
+_End DATETIME DEFAULT NULL,
+_AssetLegacyId VARCHAR(20) DEFAULT NULL,
+_AssetLegacyDARAssetId VARCHAR(20) DEFAULT NULL,
+_ExchangeLegacyId VARCHAR(20) DEFAULT NULL,
+_Lookback INT DEFAULT NULL,
+_LookbackUnit VARCHAR(20) DEFAULT NULL,
+_Frequency INT DEFAULT NULL,
+_FrequencyUnit VARCHAR(20) DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+       
+        BEGIN
+            SELECT Count(*) FROM ServingListSnapshot WHERE ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO ServingListSnapshot( SnapshotName,SnapshotVersion,ProcessName, PairName,ProcessId,PairId,AssetName,
+                    AssetId, Exchange,ExchangeId, ExchangePairName, AssetTicker,ExchangeVettingStatus, ExchangeVettingStatusCode,
+                    AssetTierDescription, AssetTierCode, Start, End, AssetLegacyId, AssetLegacyDARAssetId, ExchangeLegacyId, Lookback,
+                    LookbackUnit,Frequency, FrequencyUnit,CreateUser, IsActive, CreateTime)
+                    values( _SnapshotName,_SnapshotVersion,_ProcessName,_PairName,_ProcessId,_PairId, _AssetName,_AssetId,_Exchange,
+                    _ExchangeId,_ExchangePairName,_AssetTicker,_ExchangeVettingStatus, _ExchangeVettingStatusCode,_AssetTierDescription,
+                    _AssetTierCode,_Start, _End, _AssetLegacyId, _AssetLegacyDARAssetId, _ExchangeLegacyId, _Lookback, _LookbackUnit,
+                    _Frequency,_FrequencyUnit, _CreateUser,_IsActive,v_date);
+					COMMIT;
+                    SELECT ID FROM ServingListSnapshot WHERE SnapshotName=_SnapshotName and SnapshotVersion=_SnapshotVersion 
+                    and ProcessName=_ProcessName and PairName=_PairName into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE ServingListSnapshot SET SnapshotName=_SnapshotName , SnapshotVersion=_SnapshotVersion,
+                        ProcessName=_ProcessName , PairName=_PairName , ProcessId=_ProcessId , PairId=_PairId ,AssetName=_AssetName,
+                        AssetId=_AssetId, Exchange=_Exchange, ExchangeId=_ExchangeId, ExchangePairName=_ExchangePairName, AssetTicker=_AssetTicker,
+                        ExchangeVettingStatus=_ExchangeVettingStatus,AssetTierDescription=_AssetTierDescription, AssetTierCode=_AssetTierCode,
+                        Start=_Start,End=_End, AssetLegacyId=_AssetLegacyId, AssetLegacyDARAssetId=_AssetLegacyDARAssetId, ExchangeLegacyId=_ExchangeLegacyId,
+                        Lookback=_Lookback, LookbackUnit=_LookbackUnit, Frequency=_Frequency, FrequencyUnit=_FrequencyUnit, CreateUser=_CreateUser WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                
+				DELETE FROM ServingListSnapshot WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLSIdentifierType(
+_OPERATION VARCHAR(20),
+_Name VARCHAR(100),
+_DisplayName VARCHAR(250),
+_ID BIGINT(16) DEFAULT 1,
+_IsKey TINYINT DEFAULT 0,
+_IsUnique TINYINT DEFAULT 0,
+_IsNatural TINYINT DEFAULT 0,
+_IsGrouped TINYINT DEFAULT 0,
+_Description VARCHAR(250) DEFAULT NULL,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+       
+        BEGIN
+            SELECT Count(*) FROM SIdentifierType WHERE ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO SIdentifierType( Name, DisplayName, IsKey, IsUnique, IsNatural,IsGrouped, Description, CreateUser, LastEditUser, CreateTime, LastEditTime)
+                    values( _Name, _DisplayName, _IsKey, _IsUnique, _IsNatural,_IsGrouped,_Description, _CreateUser,_LastEditUser,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM SIdentifierType WHERE Name=_Name and DisplayName=_DisplayName and LastEditTime=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE SIdentifierType SET DisplayName=_DisplayName,Name=_Name, IsKey=_IsKey,IsUnique=_IsUnique, IsNatural=_IsNatural,IsGrouped=_IsGrouped, Description=_Description,
+                        LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+               
+				DELETE FROM SIdentifierType WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+
