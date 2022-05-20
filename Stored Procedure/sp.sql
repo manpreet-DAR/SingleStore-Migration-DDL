@@ -7,7 +7,7 @@ _DARTicker VARCHAR(20),
 _Name VARCHAR(100),
 _CreateUser VARCHAR(100),
 _LastEditUser VARCHAR(100),
-_Id BIGINT(16) DEFAULT 1, 
+_ID BIGINT(16) DEFAULT 0, 
 _AssetType VARCHAR(200) DEFAULT NULL, 
 _Description VARCHAR(1500) DEFAULT NULL, 
 _Sponsor VARCHAR(255) DEFAULT NULL,
@@ -101,7 +101,7 @@ _ContractAddress VARCHAR(1000),
 _Contact VARCHAR(1000),
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
-_Id BIGINT(16) DEFAULT 1, 
+_ID BIGINT(16) DEFAULT 0, 
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
@@ -157,7 +157,7 @@ _Description VARCHAR(250),
 _Link VARCHAR(250) DEFAULT NULL,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
-_Id BIGINT(16) DEFAULT 1, 
+_ID BIGINT(16) DEFAULT 0, 
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
@@ -372,7 +372,7 @@ _AssetID BIGINT(16) ,
 _AvailabilityTypeID BIGINT(16) ,
 _CreateUser VARCHAR(100)DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
@@ -524,7 +524,7 @@ _BlockChainId BIGINT(16),
 _TokenContractAddress VARCHAR(500) DEFAULT NULL,
 _CreateUser VARCHAR(100)DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
@@ -581,7 +581,7 @@ _URLTypeID INT,
 _URLPath VARCHAR(1500) DEFAULT NULL,
 _CreateUser VARCHAR(100)DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
@@ -633,7 +633,7 @@ _VettingStatusId BIGINT(16),
 _IndexStatus INT DEFAULT NULL,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
@@ -692,7 +692,7 @@ _DisplayName VARCHAR(250),
 _APIName VARCHAR(100) DEFAULT NULL,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
@@ -762,7 +762,7 @@ use refmaster_internal_DEV;
 DELIMITER //
 CREATE OR REPLACE PROCEDURE spDMLBlockChain(
 _OPERATION VARCHAR(20),
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _Name VARCHAR(255) DEFAULT NULL,
 _Description VARCHAR(255) DEFAULT NULL,
 _ConsensusMechanism VARCHAR(255) DEFAULT NULL,
@@ -809,7 +809,7 @@ CREATE OR REPLACE PROCEDURE spDMLClients(
 _OPERATION VARCHAR(20),
 _ClientName VARCHAR(250),
 _Description VARCHAR(250) ,
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _CallerID VARCHAR(250) DEFAULT NULL,
 _HasFullAccess TINYINT DEFAULT NULL,
 _ReferenceData TINYINT DEFAULT NULL,
@@ -855,7 +855,7 @@ DELIMITER //
 CREATE OR REPLACE PROCEDURE spDMLCustodian(
 _OPERATION VARCHAR(20),
 _Name VARCHAR(250),
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _Description VARCHAR(500) DEFAULT NULL,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
@@ -924,7 +924,7 @@ _PositionLimitURL VARCHAR(200) DEFAULT NULL,
 _BlockTradeMinimum VARCHAR(200) DEFAULT NULL,
 _LinktoTAndC VARCHAR(100) DEFAULT NULL,
 _FundingRates VARCHAR(100) DEFAULT NULL,
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
@@ -966,7 +966,7 @@ CREATE OR REPLACE PROCEDURE spDMLEntityAvailabilityType(
 _OPERATION VARCHAR(20),
 _AvailabilityTypeID INT,
 _EntityID INT,
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
@@ -1019,7 +1019,7 @@ CREATE OR REPLACE PROCEDURE spDMLEntityURLType(
 _OPERATION VARCHAR(20),
 _URLTypeID INT NOT NULL,
 _EntityID INT NOT NULL,
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
@@ -1071,7 +1071,7 @@ DELIMITER //
 CREATE OR REPLACE PROCEDURE spDMLEvent(
 _OPERATION VARCHAR(20),
 _EventName VARCHAR(50),
-_Id BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _CreateUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
@@ -1248,7 +1248,7 @@ CREATE OR REPLACE PROCEDURE spDMLExchange(
 _OPERATION VARCHAR(20),
 _DARExchangeID VARCHAR(20),
 _ShortName VARCHAR(100),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _ExchangeType VARCHAR(255) DEFAULT NULL,
 _LegacyId INT DEFAULT NULL,
 _LegalName VARCHAR(255) DEFAULT NULL,
@@ -1400,7 +1400,7 @@ CREATE OR REPLACE PROCEDURE spDMLExchangeAvailability(
 _OPERATION VARCHAR(20),
 _ExchangeID BIGINT(16),
 _AvailabilityTypeID BIGINT(16),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
@@ -1451,7 +1451,7 @@ _OPERATION VARCHAR(20),
 _PairID BIGINT(16),
 _ExchangeID BIGINT(16),
 _ExchangePairName VARCHAR(20),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _ExchangePairNumberId INT DEFAULT NULL,
 _ExchangePairStringId VARCHAR(200) DEFAULT NULL,
 _ExchangePairShortName VARCHAR(200) DEFAULT NULL,
@@ -1563,7 +1563,7 @@ _OPERATION VARCHAR(20),
 _ExchangeID BIGINT(16) ,
 _URLTypeID BIGINT(16) ,
 _URLPath VARCHAR(250) ,
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsAvailable TINYINT DEFAULT NULL,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
@@ -1616,7 +1616,7 @@ _OPERATION VARCHAR(20),
 _ProcessId INT ,
 _ExchangeId INT,
 _VettingStatusId INT,
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
 _IsActive TINYINT DEFAULT 1) RETURNS text AS
@@ -1677,7 +1677,7 @@ _AssetID INT,
 _ExchangeID INT,
 _ExchangeAssetTicker VARCHAR(20),
 _ExchangeAssetName VARCHAR(100),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsAvailable TINYINT DEFAULT NULL,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL,
@@ -1736,7 +1736,7 @@ _Thread VARCHAR(255),
 _Level VARCHAR(50),
 _Logger VARCHAR(255),
 _Message VARCHAR(4000),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _Exception VARCHAR(2000) DEFAULT NULL)RETURNS text AS
 	DECLARE 
 		v_count INT =0;
@@ -1776,7 +1776,7 @@ _OPERATION VARCHAR(20),
 _OutstandingSupply DECIMAL(18, 0),
 _AssetID BIGINT(16),
 _ProcessID BIGINT(16),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsActive TINYINT DEFAULT 1,
 _Reviewed TINYINT DEFAULT NULL)RETURNS text AS
 	DECLARE 
@@ -1818,7 +1818,7 @@ _OPERATION VARCHAR(20),
 _AssetID INT,
 _QuoteAssetID INT,
 _DARName VARCHAR(20),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsActive TINYINT DEFAULT 1,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
@@ -1871,7 +1871,7 @@ CREATE OR REPLACE PROCEDURE spDMLProcess(
 _OPERATION VARCHAR(20),
 _Name VARCHAR(255),
 _Description VARCHAR(500),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _Lookback INT DEFAULT NULL,
 _Frequency INT DEFAULT NULL,
 _LookbackUnit VARCHAR(20) DEFAULT NULL,
@@ -1918,7 +1918,7 @@ CREATE OR REPLACE PROCEDURE spDMLRoleAppModule(
 _OPERATION VARCHAR(20),
 _AppModuleId INT,
 _RoleId VARCHAR(128),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 	DECLARE 
@@ -1970,7 +1970,7 @@ CREATE OR REPLACE PROCEDURE spDMLSDataType(
 _OPERATION VARCHAR(20),
 _Name VARCHAR(100),
 _DisplayName VARCHAR(250) ,
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _Description VARCHAR(250) DEFAULT NULL,
 _ParentTypeID INT DEFAULT NULL,
 _SqlDataType VARCHAR(100) DEFAULT NULL,
@@ -2024,7 +2024,7 @@ _OPERATION VARCHAR(20),
 _CategoryID INT,
 _Name VARCHAR(100),
 _DisplayName VARCHAR(250),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _Description VARCHAR(250) DEFAULT NULL,
 _IsActive TINYINT DEFAULT 1,
 _CreateUser VARCHAR(100) DEFAULT NULL,
@@ -2077,7 +2077,7 @@ _EntityID INT,
 _Name VARCHAR(100),
 _DisplayName VARCHAR(250),
 _DataTypeID INT,
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _EnumerationID INT DEFAULT NULL,
 _Description VARCHAR(250) DEFAULT NULL,
 _IsActive TINYINT DEFAULT 1,
@@ -2138,7 +2138,7 @@ CREATE OR REPLACE PROCEDURE spDMLSEntityCategory(
 _OPERATION VARCHAR(20),
 _Name VARCHAR(100),
 _DisplayName VARCHAR(250),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _Description VARCHAR(250) DEFAULT NULL,
 _IsActive TINYINT DEFAULT 1,
 _CreateUser VARCHAR(100) DEFAULT NULL,
@@ -2182,7 +2182,7 @@ CREATE OR REPLACE PROCEDURE spDMLSEnumeration(
 _OPERATION VARCHAR(20),
 _Name VARCHAR(100),
 _DisplayName VARCHAR(250),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _LookupName VARCHAR(100) DEFAULT NULL,
 _Description VARCHAR(250) DEFAULT NULL,
 _IsActive TINYINT DEFAULT 1,
@@ -2231,7 +2231,7 @@ _ValueID INT,
 _SortOrder INT,
 _Name VARCHAR(100),
 _DisplayName VARCHAR(250),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsActive TINYINT DEFAULT 1,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
@@ -2286,7 +2286,7 @@ CREATE OR REPLACE PROCEDURE spDMLServingList(
 _OPERATION VARCHAR(20),
 _ProcessID INT,
 _Start DATETIME,
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _End DATETIME DEFAULT NULL,
 _PairID INT DEFAULT NULL,
 _SourceID INT DEFAULT NULL,
@@ -2415,7 +2415,7 @@ CREATE OR REPLACE PROCEDURE spDMLSIdentifierType(
 _OPERATION VARCHAR(20),
 _Name VARCHAR(100),
 _DisplayName VARCHAR(250),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsKey TINYINT DEFAULT 0,
 _IsUnique TINYINT DEFAULT 0,
 _IsNatural TINYINT DEFAULT 0,
@@ -2463,7 +2463,7 @@ _OPERATION VARCHAR(20),
 _DARSourceID VARCHAR(20),
 _ShortName VARCHAR(255),
 _SourceType VARCHAR(255),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsActive TINYINT DEFAULT 1,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
@@ -2508,7 +2508,7 @@ _OPERATION VARCHAR(20),
 _Major INT ,
 _Minor INT ,
 _EffectiveStart DATE ,
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _Name VARCHAR(100)  DEFAULT NULL,
 _DisplayName VARCHAR(250) DEFAULT NULL,
 _EffectiveEnd DATE DEFAULT NULL,
@@ -2558,7 +2558,7 @@ _DisplayName VARCHAR(250),
 _DataTypeID INT,
 _SortOrder INT,
 _VersionID INT,
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsRequired TINYINT DEFAULT 0,
 _IsSystem TINYINT DEFAULT 0,
 _IsDisplay TINYINT DEFAULT 0,
@@ -2614,7 +2614,7 @@ _OPERATION VARCHAR(20),
 _TypeID INT ,
 _EntityID INT,
 _VersionID INT,
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsLookup TINYINT DEFAULT 0,
 _Name VARCHAR(100) DEFAULT NULL,
 _DisplayName VARCHAR(250) DEFAULT NULL,
@@ -2670,7 +2670,7 @@ _FromColumnID INT,
 _ToColumnID INT,
 _JoinTypeID INT,
 _JoinDirectionID INT,
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _IsActive TINYINT DEFAULT 1,
 _CreateUser VARCHAR(100) DEFAULT NULL,
 _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
@@ -2725,7 +2725,7 @@ CREATE OR REPLACE PROCEDURE spDMLSTableJoinDirection(
 _OPERATION VARCHAR(20),
 _Name VARCHAR(100),
 _DisplayName VARCHAR(250),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _SqlKeyword VARCHAR(100) DEFAULT NULL,
 _IsActive TINYINT DEFAULT 1,
 _CreateUser VARCHAR(100) DEFAULT NULL,
@@ -2770,7 +2770,7 @@ CREATE OR REPLACE PROCEDURE spDMLSTableType(
 _OPERATION VARCHAR(20),
 _Name VARCHAR(100),
 _DisplayName VARCHAR(250),
-_ID BIGINT(16) DEFAULT 1,
+_ID BIGINT(16) DEFAULT 0,
 _Description VARCHAR(250) DEFAULT NULL,
 _NamePrefix VARCHAR(10) DEFAULT NULL,
 _OverrideDataTypeID INT DEFAULT NULL,
@@ -2817,3 +2817,597 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 END //
 DELIMITER ;
 
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLStage_CollectedListing(
+_OPERATION VARCHAR(20),
+_CollectionSourceID INT,
+_ExchangeAssetTicker VARCHAR(100),
+_ID BIGINT(16) DEFAULT 0,
+_ExchangeAssetName VARCHAR(250) DEFAULT NULL,
+_ValidationTime DATETIME DEFAULT NULL,
+_TickerMatch TINYINT DEFAULT NULL,
+_NameMatch TINYINT DEFAULT NULL,
+_ListingTickerMatch TINYINT DEFAULT NULL,
+_ListingNameMatch TINYINT DEFAULT NULL,
+_AssetID INT DEFAULT NULL,
+_ListingID INT DEFAULT NULL,
+_MatchesPrevious TINYINT DEFAULT NULL,
+_ExcludeDuplicate TINYINT  DEFAULT NULL
+) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM Stage_CollectedListing WHERE ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Stage_CollectedListing( CollectionSourceID, ExchangeAssetTicker, ExchangeAssetName, ValidationTime, TickerMatch,NameMatch,ListingTickerMatch, ListingNameMatch, AssetID, 
+                    ListingID,MatchesPrevious,ExcludeDuplicate, CreateTime)
+                    values( _CollectionSourceID, _ExchangeAssetTicker, _ExchangeAssetName, _ValidationTime,_TickerMatch,_NameMatch,_ListingTickerMatch,_ListingNameMatch, _AssetID,
+                    _ListingID,_MatchesPrevious,_ExcludeDuplicate,v_date);
+					COMMIT;
+                    SELECT ID FROM Stage_CollectedListing WHERE CollectionSourceID=_CollectionSourceID and  ExchangeAssetTicker=_ExchangeAssetTicker and CreateTime=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Stage_CollectedListing SET CollectionSourceID=_CollectionSourceID, ExchangeAssetTicker=_ExchangeAssetTicker ,ExchangeAssetName=_ExchangeAssetName ,ValidationTime=_ValidationTime,
+                        TickerMatch=_TickerMatch,NameMatch=_NameMatch,ListingTickerMatch=_ListingTickerMatch, ListingNameMatch=_ListingNameMatch, AssetID=_AssetID, ListingID=_ListingID, MatchesPrevious=_MatchesPrevious,
+                        ExcludeDuplicate=_ExcludeDuplicate WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+                        
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                SELECT Count(*) FROM Stage_CollectionSource WHERE ID=_CollectionSourceID into v_del_count1;
+                
+                IF(v_del_count1 =0 ) Then
+					DELETE FROM Stage_CollectedListing WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionSource field (CollectionSourceID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLStage_CollectionBatch(
+_OPERATION VARCHAR(20),
+_CollectionBatchTypeID INT,
+_EffectiveDate DATE,
+_StartTime DATETIME ,
+_ID BIGINT(16) DEFAULT 0,
+_EndTime DATETIME DEFAULT NULL,
+_FailureMessage VARCHAR(250) DEFAULT NULL,
+_PreviousBatchID INT DEFAULT NULL,
+_CollectionValidationID INT DEFAULT NULL,
+_MatchesPrevious TINYINT DEFAULT NULL
+) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM Stage_CollectionBatch WHERE ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Stage_CollectionBatch( CollectionBatchTypeID, EffectiveDate, StartTime, EndTime, FailureMessage,PreviousBatchID,CollectionValidationID, MatchesPrevious, CreateTime)
+                    values( _CollectionBatchTypeID, _EffectiveDate, _StartTime, _EndTime,_FailureMessage,_PreviousBatchID,_CollectionValidationID,_MatchesPrevious, v_date);
+					COMMIT;
+                    SELECT ID FROM Stage_CollectionBatch WHERE CollectionBatchTypeID=_CollectionBatchTypeID and  EffectiveDate=_EffectiveDate and StartTime=_StartTime and CreateTime=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Stage_CollectionBatch SET CollectionBatchTypeID=_CollectionBatchTypeID, EffectiveDate=_EffectiveDate ,StartTime=_StartTime ,EndTime=_EndTime,
+                        FailureMessage=_FailureMessage,PreviousBatchID=_PreviousBatchID,CollectionValidationID=_CollectionValidationID, MatchesPrevious=_MatchesPrevious WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+                        
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                SELECT Count(*) FROM Stage_CollectionBatchType WHERE ID= _CollectionBatchTypeID into v_del_count1;
+                
+                IF(v_del_count1 =0 ) Then
+					DELETE FROM Stage_CollectionBatch WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionBatchType field (CollectionBatchTypeID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLStage_CollectionBatchType(
+_OPERATION VARCHAR(20),
+_Name VARCHAR(100),
+_CollectedEntityID INT ,
+_CollectionKeyAttributeID INT ,
+_TargetEntityID INT ,
+_ID BIGINT(16) DEFAULT 0,
+_IsActive TINYINT DEFAULT 1) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+        v_del_count2 int =0;
+        v_del_count3 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM Stage_CollectionBatchType WHERE Name=_Name or ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Stage_CollectionBatchType( Name,CollectedEntityID,CollectionKeyAttributeID,TargetEntityID,  IsActive,CreateTime)
+                    values( _Name,_CollectedEntityID,_CollectionKeyAttributeID,_TargetEntityID,_IsActive,v_date);
+					COMMIT;
+                    SELECT ID FROM Stage_CollectionBatchType WHERE Name=_Name and CreateTime=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Stage_CollectionBatchType SET CollectedEntityID=_CollectedEntityID,CollectionKeyAttributeID=_CollectionKeyAttributeID, TargetEntityID=_TargetEntityID,
+						IsActive=_IsActive WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				SELECT Count(*) FROM SEntity WHERE ID=_CollectedEntityID into v_del_count1;
+                SELECT Count(*) FROM SEntity WHERE ID=_TargetEntityID into v_del_count2;
+                SELECT Count(*) FROM SEntityAttribute WHERE ID=_CollectionKeyAttributeID into v_del_count3;
+                
+                IF(v_del_count1 =0 and v_del_count2=0 and v_del_count3=0) Then
+					DELETE FROM Stage_CollectionBatchType WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEntity field (CollectedEntityID,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEntity field (TargetEntityID,Id)";
+				ELSEIF v_del_count3 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEntityAttribute field (CollectionKeyAttributeID,Id)";
+				END IF;
+                
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLStage_CollectionSource(
+_OPERATION VARCHAR(20),
+_CollectionBatchID INT,
+_EntityKey VARCHAR(100),
+_CollectionMethod INT,
+_StagingMethod INT,
+_CollectedTime DATETIME,
+_ID BIGINT(16) DEFAULT 0,
+_PathLog VARCHAR(500) DEFAULT NULL,
+_ValidationTime DATETIME DEFAULT NULL,
+_MatchesPrevious TINYINT DEFAULT NULL,
+_UseInValidation TINYINT DEFAULT NULL,
+_EntityDbID INT DEFAULT NULL
+) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM Stage_CollectionSource WHERE ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Stage_CollectionSource( CollectionBatchID, EntityKey, CollectionMethod,StagingMethod,CollectedTime, PathLog, ValidationTime,MatchesPrevious,UseInValidation, EntityDbID, CreateTime)
+                    values( _CollectionBatchID, _EntityKey, _CollectionMethod,_StagingMethod,_CollectedTime, _PathLog,_ValidationTime,_MatchesPrevious,_UseInValidation,_EntityDbID, v_date);
+					COMMIT;
+                    SELECT ID FROM Stage_CollectionSource WHERE CollectionBatchID=_CollectionBatchID and  EntityKey=_EntityKey and CollectionMethod=_CollectionMethod and StagingMethod=_StagingMethod and CollectedTime=_CollectedTime and CreateTime=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Stage_CollectionSource SET CollectionBatchID=_CollectionBatchID, EntityKey=_EntityKey ,CollectionMethod=_CollectionMethod  ,StagingMethod=_StagingMethod ,CollectedTime=_CollectedTime
+                        ,PathLog=_PathLog,ValidationTime=_ValidationTime,MatchesPrevious=_MatchesPrevious, UseInValidation=_UseInValidation, EntityDbID=_EntityDbID WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+                        
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                SELECT Count(*) FROM Stage_CollectionSource WHERE ID= _CollectionBatchID into v_del_count1;
+                
+                IF(v_del_count1 =0 ) Then
+					DELETE FROM Stage_CollectionSource WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionSource field (CollectionBatchID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLStage_CollectionValidation(
+_OPERATION VARCHAR(20),
+_StartTime DATETIME,
+_ID BIGINT(16) DEFAULT 0,
+_CollectionBatchID INT DEFAULT NULL,
+_EndTime DATETIME DEFAULT NULL,
+_Success TINYINT DEFAULT NULL,
+_ValidationResponse VARCHAR(500) DEFAULT NULL
+
+) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM Stage_CollectionValidation WHERE ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Stage_CollectionValidation( StartTime, CollectionBatchID,EndTime,Success,ValidationResponse, CreateTime)
+                    values( _StartTime, _CollectionBatchID, _EndTime,_Success,_ValidationResponse, v_date);
+					COMMIT;
+                    SELECT ID FROM Stage_CollectionValidation WHERE StartTime=_StartTime and  CreateTime=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Stage_CollectionValidation SET StartTime=_StartTime, CollectionBatchID=_CollectionBatchID ,EndTime=_EndTime  ,Success=_Success ,ValidationResponse=_ValidationResponse
+                        WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+                        
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                SELECT Count(*) FROM Stage_CollectionBatch WHERE ID= _CollectionBatchID into v_del_count1;
+                
+                IF(v_del_count1 =0 ) Then
+					DELETE FROM Stage_CollectionValidation WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionBatch field (CollectionBatchID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLStaging_CryptoNodeEvents(
+_OPERATION VARCHAR(20),
+_DateofReview DATETIME,
+_ExchangeAssetTicker VARCHAR(100),
+_ID BIGINT(16) DEFAULT 0,
+_ExchangeAssetName VARCHAR(250) DEFAULT NULL,
+_DARAssetID VARCHAR(50) DEFAULT NULL,
+_EventType VARCHAR(100) DEFAULT NULL,
+_EventDate DATETIME DEFAULT NULL,
+_AnnouncementDate DATETIME DEFAULT NULL,
+_EventDescription VARCHAR(500) DEFAULT NULL,
+_SourceURL VARCHAR(500) DEFAULT NULL,
+_EventStatus VARCHAR(500) DEFAULT NULL,
+_Notes VARCHAR(500) DEFAULT NULL,
+_Deleted VARCHAR(500) DEFAULT NULL,
+_Exchange VARCHAR(50) DEFAULT NULL,
+_ValidationTime DATETIME DEFAULT NULL,
+_AssetID INT DEFAULT NULL,
+_SourceID INT DEFAULT NULL,
+_EventTypeID INT DEFAULT NULL,
+_BlockHeight INT DEFAULT NULL,
+_Error VARCHAR(500) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+        v_del_count2 int =0;
+        v_del_count3 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM Staging_CryptoNodeEvents WHERE ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Staging_CryptoNodeEvents( DateofReview,ExchangeAssetTicker,ExchangeAssetName,EventType,EventDate,AnnouncementDate,EventDescription,SourceURL,EventStatus,Notes,Deleted,Exchange,ValidationTime,AssetID,SourceID,EventTypeID,BlockHeight,Error,CreateTime)
+                    values( _DateofReview,_ExchangeAssetTicker,_ExchangeAssetName,_EventType,_EventDate,_AnnouncementDate,_EventDescription,_SourceURL,_EventStatus,_Notes,_Deleted,_Exchange,_ValidationTime,_AssetID,_SourceID,_EventTypeID,_BlockHeight,_Error,v_date);
+					COMMIT;
+                    SELECT ID FROM Staging_CryptoNodeEvents WHERE DateofReview=_DateofReview and ExchangeAssetTicker=_ExchangeAssetTicker  into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Staging_CryptoNodeEvents SET DateofReview=_DateofReview, ExchangeAssetTicker=_ExchangeAssetTicker, ExchangeAssetName=_ExchangeAssetName,EventType=_EventType,EventDate=_EventDate,AnnouncementDate=_AnnouncementDate,
+						EventDescription=_EventDescription, SourceURL=_SourceURL, EventStatus=_EventStatus, Notes=_Notes, Deleted=_Deleted, Exchange=_Exchange, ValidationTime=_ValidationTime, AssetID=_AssetID, SourceID=_SourceID, EventTypeID=_EventTypeID, 
+                        BlockHeight=_BlockHeight,Error=_Error WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				SELECT Count(*) FROM Asset WHERE ID=_AssetID into v_del_count1;
+                SELECT Count(*) FROM Source WHERE ID=_SourceID into v_del_count2;
+                SELECT Count(*) FROM Event WHERE ID=_EventTypeID into v_del_count3;
+                
+                IF(v_del_count1 =0 and v_del_count2=0 and v_del_count3=0) Then
+					DELETE FROM Staging_CryptoNodeEvents WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Source field (SourceID,Id)";
+				ELSEIF v_del_count3 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Event field (EventTypeID,Id)";
+				END IF;
+                
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLStaging_OutstandingSupply(
+_OPERATION VARCHAR(20),
+_SourceId INT,
+_AssetID INT,
+_ProcessID INT,
+_OutstandingSupply DECIMAL(18, 0),
+_ID BIGINT(16) DEFAULT 0,
+_Error VARCHAR(500) DEFAULT NULL,
+_PassedValidation TINYINT DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_Reviewed TINYINT DEFAULT NULL,
+_OutstandingSupplyReviewed DECIMAL(18, 0) DEFAULT NULL,
+_BaseDataAvailable TINYINT DEFAULT NULL
+) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM Staging_OutstandingSupply WHERE ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Staging_OutstandingSupply( SourceId, AssetID,ProcessID,OutstandingSupply,Error,CollectedTimeStamp, PassedValidation,IsActive,Reviewed,OutstandingSupplyReviewed,BaseDataAvailable)
+                    values( _SourceId, _AssetID, _ProcessID,_OutstandingSupply,_Error,v_date, _PassedValidation,_IsActive, _Reviewed,_OutstandingSupplyReviewed,_BaseDataAvailable);
+					COMMIT;
+                    SELECT ID FROM Staging_OutstandingSupply WHERE SourceId=_SourceId and  AssetID=_AssetID and ProcessID=_ProcessID and OutstandingSupply=_OutstandingSupply and CollectedTimeStamp=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE Staging_OutstandingSupply SET SourceId=_SourceId, AssetID=_AssetID ,ProcessID=_ProcessID  ,OutstandingSupply=_OutstandingSupply ,Error=_Error,PassedValidation=_PassedValidation,IsActive=_IsActive,
+                        Reviewed=_Reviewed, OutstandingSupplyReviewed=_OutstandingSupplyReviewed, BaseDataAvailable=_BaseDataAvailable WHERE ID=_ID;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+                        
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                SELECT Count(*) FROM Staging_OutstandingSupply WHERE ID= _AssetID into v_del_count1;
+                
+                IF(v_del_count1 =0 ) Then
+					DELETE FROM Staging_OutstandingSupply WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Staging_OutstandingSupply field (AssetID,Id)";
+				END IF;
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLTheme(
+_OPERATION VARCHAR(20),
+_Name VARCHAR(250),
+_ThemeType VARCHAR(100),
+_ID BIGINT(16) DEFAULT 0,
+_Description VARCHAR(500) DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL
+) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM Theme WHERE Name=_Name or ThemeType=_ThemeType into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Theme(Name,Description,ThemeType,CreateUser, LastEditUser, IsActive,CreateTime, LastEditTime)
+                    values(_Name,_Description,_ThemeType,_CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM Theme WHERE Name=_Name and ThemeType=_ThemeType and LastEditTime=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+					UPDATE Theme SET Name=_Name, Description=_Description ,ThemeType=_ThemeType, IsActive=_IsActive, LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+					ECHO SELECT  v_id as "ID", 'Data  Updated';
+                    
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				DELETE FROM Theme WHERE ID=_ID;
+				COMMIT;
+                ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+            
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLURLType(
+_OPERATION VARCHAR(20),
+_Name VARCHAR(100),
+_DisplayName VARCHAR(250),
+_ID BIGINT(16) DEFAULT 0,
+_APIName VARCHAR(100) DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL
+) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM URLType WHERE Name=_Name and DisplayName=_DisplayName  and ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO URLType(Name,DisplayName,APIName,CreateUser, LastEditUser, IsActive,CreateTime, LastEditTime)
+                    values(_Name,_DisplayName,_APIName,_CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM URLType WHERE Name=_Name and DisplayName=_DisplayName and LastEditTime=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+					UPDATE URLType SET Name=_Name, DisplayName=_DisplayName ,APIName=_APIName, IsActive=_IsActive, LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+					ECHO SELECT  v_id as "ID", 'Data  Updated';
+                    
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				DELETE FROM URLType WHERE ID=_ID;
+				COMMIT;
+                ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+            
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLToken(
+_OPERATION VARCHAR(20),
+_DARTokenID VARCHAR(20),
+_TokenName VARCHAR(255),
+_ID BIGINT(16) DEFAULT 0,
+_TokenDescription VARCHAR(1500) DEFAULT NULL,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL
+) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM Token WHERE DARTokenID=_DARTokenID and TokenName=_TokenName  and ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO Token(DARTokenID,TokenName,TokenDescription,CreateUser, LastEditUser, IsActive,CreateTime, LastEditTime)
+                    values(_DARTokenID,_TokenName,_TokenDescription,_CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM Token WHERE DARTokenID=_DARTokenID and TokenName=_TokenName and LastEditTime=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+					UPDATE Token SET DARTokenID=_DARTokenID, TokenName=_TokenName ,TokenDescription=_TokenDescription, IsActive=_IsActive, LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+					ECHO SELECT  v_id as "ID", 'Data  Updated';
+                    
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				DELETE FROM Token WHERE ID=_ID;
+				COMMIT;
+                ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+            
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLVettingStatus(
+_OPERATION VARCHAR(20),
+_StatusCode INT,
+_StatusDescription VARCHAR(200),
+_StatusType VARCHAR(200),
+_ID BIGINT(16) DEFAULT 0,
+_IsActive TINYINT DEFAULT 1,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL
+) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
+       
+        BEGIN
+            SELECT Count(*) FROM VettingStatus WHERE StatusDescription=_StatusDescription and ID=_ID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO VettingStatus(StatusCode,StatusDescription,StatusType,CreateUser, LastEditUser, IsActive,CreateTime, LastEditTime)
+                    values(_StatusCode,_StatusDescription,_StatusType,_CreateUser,_LastEditUser,_IsActive,v_date, v_date);
+					COMMIT;
+                    SELECT ID FROM VettingStatus WHERE StatusDescription=_StatusDescription and LastEditTime=v_date into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+					UPDATE VettingStatus SET StatusCode=_StatusCode, StatusDescription=_StatusDescription ,StatusType=_StatusType, IsActive=_IsActive, LastEditUser=_LastEditUser,LastEditTime=v_date WHERE ID=_ID;
+					ECHO SELECT  v_id as "ID", 'Data  Updated';
+                    
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+				DELETE FROM VettingStatus WHERE ID=_ID;
+				COMMIT;
+                ECHO SELECT  v_id as "ID", 'Data Deleted';
+			END IF;
+            Return v_id;
+            
+END //
+DELIMITER ;
