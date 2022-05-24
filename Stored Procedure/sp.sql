@@ -802,7 +802,6 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 END //
 DELIMITER ;
 
-
 use refmaster_internal_DEV;
 DELIMITER //
 CREATE OR REPLACE PROCEDURE spDMLClients(
@@ -821,7 +820,7 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_id BIGINT(16) =  _Id;
+        v_id BIGINT(16) =  _ID;
         BEGIN
             SELECT Count(*) FROM Clients WHERE CallerID=_CallerID into v_count;
             SELECT NOW() into v_date;
@@ -834,7 +833,7 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                     ECHO SELECT v_id as "ID" , 'Data Inserted';
    
 				ELSEIF(v_count = 1) Then
-						UPDATE Clients SET ClientName=_ClientName, Description=_Description, CallerID=_CallerID, HasFullAccess=_HasFullAccess, ReferenceData=_ReferenceData, Price=_Price, APIKey=_APIKey, CreateUser=_CreateUser,LastEditUser=_LastEditUser, IsActive=_IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_Id;
+						UPDATE Clients SET ClientName=_ClientName, Description=_Description, CallerID=_CallerID, HasFullAccess=_HasFullAccess, ReferenceData=_ReferenceData, Price=_Price, APIKey=_APIKey, IsActive=_IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_Id;
 						ECHO SELECT  v_id as "ID", 'Data  Updated';
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT  'Duplicate Date found!!!';
@@ -849,6 +848,50 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
             Return v_id;
 END //
 DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLClientAssets(
+_OPERATION VARCHAR(20),
+_AssetID BIGINT(16),
+_ClientID BIGINT(16),
+_ID BIGINT(16) DEFAULT 0,
+_ReferenceData TINYINT DEFAULT NULL,
+_Price TINYINT DEFAULT NULL,
+_CreateUser VARCHAR(100) DEFAULT NULL,
+_LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
+	DECLARE 
+		v_count INT =0;
+        v_date DATETIME = CURRENT_TIMESTAMP();
+        v_id BIGINT(16) =  _ID;
+        BEGIN
+            SELECT Count(*) FROM ClientAssets WHERE AssetID=_AssetID or ClientID=_ClientID into v_count;
+            SELECT NOW() into v_date;
+            If (UPPER(_OPERATION) = "UPSERT") Then
+				IF(v_count = 0) Then
+					INSERT INTO ClientAssets(AssetID, ClientID, ReferenceData, _Price, CreateUser,LastEditUser, CreateTime, LastEditTime)
+                    values(_AssetID, _ClientID, _ReferenceData, _Price, _CreateUser,_LastEditUser,v_date, v_date);
+					COMMIT;
+                    SELECT Id FROM ClientAssets WHERE AssetID=_AssetID and ClientID=_ClientID  into v_id;
+                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+   
+				ELSEIF(v_count = 1) Then
+						UPDATE ClientAssets SET  ReferenceData=_ReferenceData, Price=_Price,  LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_Id;
+						ECHO SELECT  v_id as "ID", 'Data  Updated';
+				ELSEIF(v_count > 1) Then
+					ECHO SELECT  'Duplicate Date found!!!';
+                END IF;
+			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+            
+				DELETE FROM ClientAssets WHERE Id=_Id;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
+				
+			END IF;
+            Return v_id;
+END //
+DELIMITER ;
+
 
 use refmaster_internal_DEV;
 DELIMITER //
@@ -3411,3 +3454,4 @@ _LastEditUser VARCHAR(100) DEFAULT NULL
             
 END //
 DELIMITER ;
+
