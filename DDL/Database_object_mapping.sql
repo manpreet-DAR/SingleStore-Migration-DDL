@@ -3147,9 +3147,292 @@ CREATE TABLE refmaster_internal_DEV.BlackListedRefId(
 	DARRefId VARCHAR(20) NOT NULL,
     PRIMARY KEY (DARRefId ASC));
 
-Table
+vAssetCustodian
 SQL SERVER SCRIPT
+CREATE VIEW [dbo].[vAssetCustodian]
+--WITH ENCRYPTION
+AS
+select a.ID as AssetID,c.Name as Custodian
+from AssetCustodian t
+inner join Asset a on t.assetid = a.Id
+inner join Custodian c on t.CustodianID = c.Id;
 SINGLE STORE SCRIPT
+CREATE VIEW vAssetCustodian
+AS
+select a.ID as AssetID,c.Name as Custodian
+from AssetCustodian t
+inner join Asset a on t.assetid = a.Id
+inner join Custodian c on t.CustodianID = c.Id;
+
+
+vAssetTheme
+SQL SERVER SCRIPT
+CREATE VIEW [dbo].[vAssetTheme]
+--WITH ENCRYPTION
+AS
+	select ta.AssetId
+		,th.Name as Theme
+		,th.ThemeType
+	from Theme th
+	inner join dbo.AssetTheme ta on th.id = ta.ThemeID;
+SINGLE STORE SCRIPT
+use refmaster_internal_DEV;
+CREATE VIEW vAssetTheme
+AS
+	select ta.AssetId
+	,th.Name as Theme
+	,th.ThemeType
+	from Theme th
+	inner join AssetTheme ta on th.id = ta.ThemeID;
+
+
+vAssetToken
+SQL SERVER SCRIPT
+CREATE VIEW [dbo].[vAssetToken]
+--WITH ENCRYPTION
+AS
+select
+	atb.ID
+	,a.DARAssetID
+	, a.DARTicker
+	, a.Name as AssetName
+	,t.DARTokenID
+	,t.TokenName
+	,b.Name as BlockChain
+	, atb.TokenContractAddress
+	,b.ConsensusMechanism
+	,b.HashAlgorithm
+from dbo.AssetToken atb
+inner join dbo.Asset a on atb.AssetID = a.ID
+inner join dbo.Token t on atb.TokenId = t.ID
+inner join dbo.BlockChain b on atb.BlockChainId = b.ID;
+
+SINGLE STORE SCRIPT
+CREATE VIEW vAssetToken
+AS
+select
+	atb.ID
+	,a.DARAssetID
+	, a.DARTicker
+	, a.Name as AssetName
+	,t.DARTokenID
+	,t.TokenName
+	,b.Name as BlockChain
+	, atb.TokenContractAddress
+	,b.ConsensusMechanism
+	,b.HashAlgorithm
+from AssetToken atb
+inner join Asset a on atb.AssetID = a.ID
+inner join Token t on atb.TokenId = t.ID
+inner join BlockChain b on atb.BlockChainId = b.ID;
+
+
+vExchange
+SQL SERVER SCRIPT
+CREATE VIEW [dbo].[vExchange]
+--WITH ENCRYPTION
+AS
+
+	SELECT
+		  v.ID AS ExchangeID
+		, v.UniqueID
+		
+		, v.DARExchangeID
+		, v.ShortName
+		, v.ExchangeType	AS ExchangeTypeEnumerationValueID
+		, ev.ValueID		AS ExchangeTypeValueID
+		, ev.[Name]			AS ExchangeTypeName
+		, ev.DisplayName	AS ExchangeTypeDisplayName
+
+		, v.IsActive
+		
+		, v.CreateTime
+		, v.CreateUser
+		, v.LastEditTime
+		, v.LastEditUser
+	FROM
+		dbo.Exchange AS v
+		LEFT JOIN dbo.SEnumerationValue AS ev ON v.ExchangeType = ev.ID;
+
+SINGLE STORE SCRIPT
+use refmaster_internal_DEV;
+CREATE VIEW vExchange
+AS
+
+	SELECT
+		  v.ID AS ExchangeID
+		, v.DARExchangeID
+		, v.ShortName
+		, v.ExchangeType	AS ExchangeTypeEnumerationValueID
+		, ev.ValueID		AS ExchangeTypeValueID
+		, ev.Name   		AS ExchangeTypeName
+		, ev.DisplayName	AS ExchangeTypeDisplayName
+		, v.IsActive
+		, v.CreateTime
+		, v.CreateUser
+		, v.LastEditTime
+		, v.LastEditUser
+	FROM
+		Exchange AS v
+		LEFT JOIN SEnumerationValue AS ev ON v.ExchangeType = ev.ID;
+
+vExchangePair
+SQL SERVER SCRIPT
+CREATE VIEW [dbo].[vExchangePair]
+--WITH ENCRYPTION
+AS
+	SELECT
+		  v.ID AS ExchangePairID
+		, v.UniqueID
+		, e.ID			AS ExchangeID
+		, e.DARExchangeID
+		, e.ShortName	AS ExchangeShortName
+		, a.ID			AS AssetID
+		, a.DARAssetID
+		, a.DARTicker	AS AssetDARTicker
+		, qa.ID			AS QuoteAssetID
+		, qa.DARAssetID AS QuoteDARAssetID
+		, qa.DARTicker	AS QuoteAssetDARTicker
+		, p.ID			AS PairID
+		, p.DARName		AS PairDARName
+		, v.ExchangePairName
+		, v.IsActive
+		, v.CreateTime
+		, v.CreateUser
+		, v.LastEditTime
+		, v.LastEditUser
+	FROM
+		dbo.ExchangePair AS v
+		INNER JOIN dbo.Pair AS p ON p.ID = v.PairID
+		INNER JOIN dbo.Asset AS a ON a.ID = p.AssetID
+		INNER JOIN dbo.Asset AS qa ON qa.ID = p.QuoteAssetID
+		INNER JOIN dbo.Exchange AS e ON e.ID = v.ExchangeID;
+
+SINGLE STORE SCRIPT
+CREATE VIEW vExchangePair
+AS
+
+	SELECT
+		  v.ID AS ExchangePairID
+		, e.ID			AS ExchangeID
+		, e.DARExchangeID
+		, e.ShortName	AS ExchangeShortName
+		, a.ID			AS AssetID
+		, a.DARAssetID
+		, a.DARTicker	AS AssetDARTicker
+		, qa.ID			AS QuoteAssetID
+		, qa.DARAssetID AS QuoteDARAssetID
+		, qa.DARTicker	AS QuoteAssetDARTicker
+		, p.ID			AS PairID
+		, p.DARName		AS PairDARName
+		, v.ExchangePairName
+		, v.IsActive
+		, v.CreateTime
+		, v.CreateUser
+		, v.LastEditTime
+		, v.LastEditUser
+	FROM
+		ExchangePair AS v
+		INNER JOIN Pair AS p ON p.ID = v.PairID
+		INNER JOIN Asset AS a ON a.ID = p.AssetID
+		INNER JOIN Asset AS qa ON qa.ID = p.QuoteAssetID
+		INNER JOIN Exchange AS e ON e.ID = v.ExchangeID;
+
+vListing
+SQL SERVER SCRIPT
+CREATE VIEW [dbo].[vListing]
+--WITH ENCRYPTION
+AS
+
+	SELECT
+		  v.ID AS ListingID
+		, v.UniqueID
+	
+		, a.ID AS AssetID
+		, a.DARAssetID
+		, a.DARTicker AS AssetDARTicker
+		, a.[Name] AS AssetName
+		, e.ID AS ExchangeID
+		, e.DARExchangeID
+		, e.ShortName AS ExchangeShortName
+		, v.ExchangeAssetTicker
+		, v.ExchangeAssetName
+
+		, v.IsActive
+		
+		, v.CreateTime
+		, v.CreateUser
+		, v.LastEditTime
+		, v.LastEditUser
+	FROM
+		dbo.Listing AS v
+		INNER JOIN dbo.Exchange AS e ON e.ID = v.ExchangeID
+		INNER JOIN dbo.Asset AS a ON a.ID = v.AssetID;
+
+SINGLE STORE SCRIPT
+CREATE VIEW vListing
+AS
+	SELECT
+		  v.ID AS ListingID
+		, a.ID AS AssetID
+		, a.DARAssetID
+		, a.DARTicker AS AssetDARTicker
+		, a.Name AS AssetName
+		, e.ID AS ExchangeID
+		, e.DARExchangeID
+		, e.ShortName AS ExchangeShortName
+		, v.ExchangeAssetTicker
+		, v.ExchangeAssetName
+		, v.IsActive
+		, v.CreateTime
+		, v.CreateUser
+		, v.LastEditTime
+		, v.LastEditUser
+	FROM
+		Listing AS v
+		INNER JOIN Exchange AS e ON e.ID = v.ExchangeID
+		INNER JOIN Asset AS a ON a.ID = v.AssetID;
+
+
+vClientAssets
+SQL SERVER SCRIPT
+CREATE VIEW [dbo].[vClientAssets]
+--WITH ENCRYPTION
+AS
+select ca.ID
+		,c.ClientName
+		,c.[Description]
+		,c.CallerID
+		,a.DARAssetID
+		,a.Name as AssetName
+		,a.DARTicker
+		,coalesce(ca.ReferenceData,0) as ReferenceData
+		,coalesce(ca.Price,0) as Price
+		,a.ID as AssetID
+		,c.ID as ClientID
+from dbo.Clients c
+inner join dbo.ClientAssets ca on c.ID = ca.ClientID
+inner join dbo.Asset a on a.ID = ca.AssetID;
+
+
+SINGLE STORE SCRIPT
+use refmaster_internal_DEV;
+CREATE VIEW vClientAssets
+AS
+select ca.ID
+		,c.ClientName
+		,c.Description
+		,c.CallerID
+		,a.DARAssetID
+		,a.Name as AssetName
+		,a.DARTicker
+		,coalesce(ca.ReferenceData,0) as ReferenceData
+		,coalesce(ca.Price,0) as Price
+		,a.ID as AssetID
+		,c.ID as ClientID
+from Clients c
+inner join ClientAssets ca on c.ID = ca.ClientID
+inner join Asset a on a.ID = ca.AssetID;
 
 
 
