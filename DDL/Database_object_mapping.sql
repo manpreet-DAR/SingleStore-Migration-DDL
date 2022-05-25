@@ -125,67 +125,6 @@ CREATE TABLE `refmaster_internal_DEV`.`Asset` (
   PRIMARY KEY (`ID`,`DARAssetID` ASC, `DARTicker` ASC, `Name` ASC),
   SHARD KEY (`DARAssetID` ASC, `DARTicker` ASC, `Name` ASC));
 
-SINGLE STORE STORED PROCEDURE
-DELIMITER //
-CREATE OR REPLACE PROCEDURE spInsertAsset
-(_DARAssetID VARCHAR(20), 
-_DARTicker VARCHAR(20), 
-_Name VARCHAR(100), 
-_AssetType VARCHAR(200), 
-_IsActive TINYINT,
-_CreateUser VARCHAR(100), 
-_LastEditUser VARCHAR(100), 
-_CreateTime DATETIME, 
-_LastEditTime DATETIME , 
-_Description VARCHAR(1500), 
-_Sponsor VARCHAR(255) ,
-_IsBenchmarkAsset TINYINT , 
-_SEDOL VARCHAR(200) , 
-_ISIN VARCHAR(200), 
-_CUSIP VARCHAR(200), 
-_DTI VARCHAR(200) , 
-_DevelopmentStage VARCHAR(200) , 
-_MessariTaxonomySector VARCHAR(500), 
-_MessariTaxonomyCategory VARCHAR(500), 
-_DARSuperSector VARCHAR(200), 
-_DARSuperSectorCode VARCHAR(200) ,
-_DARSector VARCHAR(200),
-_DARSectorCode VARCHAR(200), 
-_DARSubSector VARCHAR(200), 
-_DARSubSectorCode VARCHAR(200), 
-_DarTaxonomyVersion DECIMAL(11,10), 
-_IssuanceFramework VARCHAR(200),
-_IsRestricted TINYINT, 
-_EstimatedCirculatingSupply DECIMAL(16,15), 
-_MaxSupply DECIMAL(18,0),
-_LegacyId INT, 
-_LegacyDARAssetId VARCHAR(20), 
-_InstitutionalCustodyAvailable TINYINT, 
-_DATSSuperSector VARCHAR(200), 
-_DATSSuperSectorCode VARCHAR(200), 
-_DATSSector VARCHAR(200),
-_DATSSectorCode VARCHAR(200),
-_DATSSubSector VARCHAR(200), 
-_DATSSubSectorCode VARCHAR(200), 
-_DATSTaxonomyVersion DECIMAL(11,10),
-_HasERC20Version TINYINT, 
-_HasNYDFSCustoday TINYINT,
-_CMC_ID VARCHAR(255), 
-_CG_ID VARCHAR(255)) 
-Returns QUERY(_count INT)  AS
-	DECLARE 
-    	valid INT;
-qry QUERY(_count INT) = SELECT Count(*) FROM referencemaster.Asset WHERE DARAssetID=_DARAssetID or DARTicker=_DARTicker or Name=_Name;
-	BEGIN
-		valid = SCALAR(qry);
-		IF(valid = 0) Then 
-INSERT INTO referencemaster.Asset(DARAssetID , DARTicker, Name , AssetType , IsActive ,CreateUser , LastEditUser , CreateTime , LastEditTime  , Description , Sponsor,IsBenchmarkAsset, SEDOL, ISIN , CUSIP , DTI  , DevelopmentStage , MessariTaxonomySector , MessariTaxonomyCategory , DARSuperSector , DARSuperSectorCode  ,DARSector ,DARSectorCode , DARSubSector , DARSubSectorCode , DarTaxonomyVersion , IssuanceFramework , IsRestricted , EstimatedCirculatingSupply , MaxSupply , LegacyId , LegacyDARAssetId , InstitutionalCustodyAvailable , DATSSuperSector , DATSSuperSectorCode , DATSSector ,DATSSectorCode ,DATSSubSector , DATSSubSectorCode , DATSTaxonomyVersion ,HasERC20Version , HasNYDFSCustoday , CMC_ID , CG_ID ) Values (_DARAssetID , _DARTicker, _Name , _AssetType , _IsActive ,_CreateUser , _LastEditUser , _CreateTime , _LastEditTime  , _Description , _Sponsor, _IsBenchmarkAsset, _SEDOL, _ISIN , _CUSIP , _DTI  , _DevelopmentStage , _MessariTaxonomySector , _MessariTaxonomyCategory , _DARSuperSector , _DARSuperSectorCode  ,_DARSector , _DARSectorCode , _DARSubSector , _DARSubSectorCode , _DarTaxonomyVersion , _IssuanceFramework , _IsRestricted , _EstimatedCirculatingSupply , _MaxSupply , _LegacyId , _LegacyDARAssetId , _InstitutionalCustodyAvailable , _DATSSuperSector , _DATSSuperSectorCode , _DATSSector ,_DATSSectorCode ,_DATSSubSector , _DATSSubSectorCode , _DATSTaxonomyVersion ,_HasERC20Version , _HasNYDFSCustoday , _CMC_ID , _CG_ID);
-		COMMIT;
-		END IF;
-        Return qry;
-	END //
-DELIMITER ;
-
 Asset_Audit Table
 
 SQL SERVER SCRIPT
