@@ -50,7 +50,7 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 		v_count INT =0;
         v_count2 INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_id BIGINT(16)= _Id;
+        v_id BIGINT(16)= _ID;
         
 		BEGIN
         
@@ -68,27 +68,85 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 				ELSEIF(v_count = 1) Then
 					IF (v_count2 =1) Then
 						UPDATE Asset SET AssetType=_AssetType , IsActive=_IsActive , LastEditUser=_LastEditUser , LastEditTime=v_date  , Description=_Description , Sponsor=_Sponsor, IsBenchmarkAsset=_IsBenchmarkAsset, SEDOL=_SEDOL, ISIN=_ISIN , CUSIP=_CUSIP , DTI=_DTI  , DevelopmentStage=_DevelopmentStage , MessariTaxonomySector=_MessariTaxonomySector , MessariTaxonomyCategory=_MessariTaxonomyCategory , DARSuperSector=_DARSuperSector , DARSuperSectorCode=_DARSuperSectorCode  ,DARSector=_DARSector ,DARSectorCode=_DARSectorCode , DARSubSector=_DARSubSector , DARSubSectorCode=_DARSubSectorCode , DarTaxonomyVersion=_DarTaxonomyVersion , IssuanceFramework=_IssuanceFramework , IsRestricted=_IsRestricted , EstimatedCirculatingSupply=_EstimatedCirculatingSupply , MaxSupply=_MaxSupply , LegacyId=_LegacyId , LegacyDARAssetId=_LegacyDARAssetId , InstitutionalCustodyAvailable=_InstitutionalCustodyAvailable , DATSSuperSector=_DATSSuperSector , DATSSuperSectorCode=_DATSSuperSectorCode , DATSSector=_DATSSector ,DATSSectorCode=_DATSSectorCode ,DATSSubSector=_DATSSubSector , DATSSubSectorCode=_DATSSubSectorCode , DATSTaxonomyVersion=_DATSTaxonomyVersion ,HasERC20Version=_HasERC20Version , HasNYDFSCustoday=_HasNYDFSCustoday , CMC_ID=_CMC_ID , CG_ID=_CG_ID, CirculatingSupply=_CirculatingSupply  
-                        WHERE Id = _Id;
-						ECHO SELECT _Id as "ID",_DARAssetID as "DARAssetID",_DARTicker as "DARTicker",_Name as "Name",v_count as "Partial combination exists",v_count2 as "Exact combination exists",  'Data Updated';
+                        WHERE Id = _ID;
+						ECHO SELECT _ID as "ID",_DARAssetID as "DARAssetID",_DARTicker as "DARTicker",_Name as "Name",v_count as "Partial combination exists",v_count2 as "Exact combination exists",  'Data Updated';
 					ELSE 
-                        ECHO SELECT _Id as "ID",_DARAssetID as "DARAssetID",_DARTicker as "DARTicker",_Name as "Name",v_count as "Partial combination exists",v_count2 as "Exact combination exists",  'Partial combination exist for DARAssetID, DARTicker or Name columns ';
+                        ECHO SELECT _ID as "ID",_DARAssetID as "DARAssetID",_DARTicker as "DARTicker",_Name as "Name",v_count as "Partial combination exists",v_count2 as "Exact combination exists",  'Partial combination exist for DARAssetID, DARTicker or Name columns ';
 					END IF;
                 ELSEIF(v_count > 1) Then
                     ECHO SELECT v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Duplicate Date found!!!';
                 END IF;
-			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				IF (v_count2=1) Then
-					DELETE FROM Asset WHERE Id=_Id;
-					COMMIT;
-                    ECHO SELECT _Id as "ID",_DARAssetID as "DARAssetID",_DARTicker as "DARTicker",_Name as "Name",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Data Deleted';
-				ELSE
-					ECHO SELECT _Id as "ID",_DARAssetID as "DARAssetID",_DARTicker as "DARTicker",_Name as "Name",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Partial combination exist for DARAssetID, DARTicker or Name columns';
-				END IF;
 			END IF;
 		Return v_id;
 END //
 DELIMITER ;
 
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLAssetDEL(
+_ID BIGINT(16) DEFAULT 0) RETURNS text AS
+	DECLARE 
+        v_del_count2 INT =0;
+        v_del_count3 INT =0;
+        v_del_count4 INT =0;
+        v_del_count5 INT =0;
+        v_del_count6 INT =0;
+        v_del_count8 INT =0;
+        v_del_count9 INT =0;
+        v_del_count10 INT =0;
+        v_del_count11 INT =0;
+        v_del_count12 INT =0;
+        v_del_count13 INT =0;
+        v_del_count14 INT =0;
+        
+		BEGIN
+            SELECT Count(*) FROM  ClientAssets WHERE AssetID=_ID into v_del_count2;
+            SELECT Count(*) FROM  AssetToken WHERE AssetID=_ID into v_del_count3;
+            SELECT Count(*) FROM  AssetVettingStatus WHERE AssetID=_ID into v_del_count4;
+            SELECT Count(*) FROM  AssetAvailability WHERE AssetID=_ID into v_del_count5;
+            SELECT Count(*) FROM  AssetCustodian WHERE AssetID=_ID into v_del_count6;
+            SELECT Count(*) FROM  EventInformation WHERE AssetID=_ID into v_del_count8;
+            SELECT Count(*) FROM  Listing WHERE AssetID=_ID into v_del_count9;
+            SELECT Count(*) FROM  Pair WHERE AssetID=_ID into v_del_count10;
+            SELECT Count(*) FROM  Pair WHERE QuoteAssetID=_ID into v_del_count11;
+            SELECT Count(*) FROM  Stage_CollectedListing WHERE AssetID=_ID into v_del_count12;
+            SELECT Count(*) FROM  Staging_CryptoNodeEvents WHERE AssetID=_ID into v_del_count13;
+			SELECT Count(*) FROM  Staging_OutstandingSupply WHERE AssetID=_ID into v_del_count14;
+            
+			IF( v_del_count2=0 and v_del_count3=0 and v_del_count4=0 and v_del_count5=0 and v_del_count6=0 and v_del_count8=0 and v_del_count9=0 and v_del_count10=0 and v_del_count11=0 and v_del_count12=0 and v_del_count13=0 and v_del_count14=0) Then
+				DELETE FROM AssetTheme WHERE AssetID=_ID;
+                DELETE FROM AssetURL WHERE AssetID=_ID;
+                DELETE FROM Asset WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT _ID as "ID", 'Data Deleted from AssetTheme, AssetURL, Asset';
+			ELSEIF v_del_count2 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ClientAssets field (AssetID,Id)";
+			ELSEIF v_del_count3 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table AssetToken field (AssetID,Id)";
+			ELSEIF v_del_count4 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table AssetVettingStatus field (AssetID,Id)";
+			ELSEIF v_del_count5 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table AssetAvailability field (AssetID,Id)";
+			ELSEIF v_del_count6 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table AssetCustodian field (AssetID,Id)";
+			ELSEIF v_del_count8 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table EventInformation field (AssetID,Id)";
+			ELSEIF v_del_count9 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table Listing field (AssetID,Id)";
+			ELSEIF v_del_count10 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table Pair field (AssetID,Id)";
+			ELSEIF v_del_count11 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table Pair field (QuoteAssetID,Id)";
+			ELSEIF v_del_count12 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectedListing field (AssetID,Id)";
+			ELSEIF v_del_count13 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table Staging_CryptoNodeEvents field (AssetID,Id)";
+			ELSEIF v_del_count14 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table Staging_OutstandingSupply field (AssetID,Id)";
+			END IF;
+		Return _ID;
+END //
+DELIMITER ;
 
 use refmaster_internal_DEV;
 DELIMITER //
@@ -107,7 +165,7 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 		v_count INT =0;
         v_count2 INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-		v_id BIGINT(16)= _Id;
+		v_id BIGINT(16)= _ID;
 
 		BEGIN
 			SELECT NOW() into v_date;
@@ -163,7 +221,7 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 		v_count INT =0;
         v_count2 INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_id BIGINT(16)= _Id;
+        v_id BIGINT(16)= _ID;
 		BEGIN
         
 			SELECT NOW() into v_date;
@@ -189,19 +247,26 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Duplicate Date found!!!';
                 END IF;
-			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				IF (v_count2=1) Then
-					DELETE FROM  AppModule WHERE ID=_Id;
-					COMMIT;
-                    ECHO SELECT  v_id as "ID",_ModuleName as "ModuleName",_Link as "Link",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Data Deleted';
-				ELSE
-					ECHO SELECT  v_id as "ID",_ModuleName as "ModuleName",_Link as "Link",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Partial combination exist for Link or ModuleName columns';
-				END IF;
 			END IF;
             Return v_id;
 END //
 DELIMITER ;
 
+USE refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE `spDMLAppModuleDEL`(_Id BIGINT(16) NULL)
+RETURNS TEXT AS
+BEGIN
+	IF (_Id IS NOT NULL) THEN
+		DELETE FROM RoleAppModule WHERE AppModuleId = _Id; 
+        DELETE FROM AppModule WHERE Id = _Id;		
+		COMMIT;
+	ELSE
+		ECHO SELECT "FAIL";
+	END IF; 
+	ECHO SELECT "SUCCESS";
+END // 
+DELIMITER ;  
 
 
 use refmaster_internal_DEV;
@@ -235,19 +300,27 @@ _Name VARCHAR(256)) RETURNS text AS
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Duplicate Date found!!!';
                 END IF;
-			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				IF (v_count2=1) Then
-					DELETE FROM  AspNetRoles WHERE Id=_Id and Name=_Name;
-					COMMIT;
-                    ECHO SELECT  _Id as "Id",_Name as "Name",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Data Deleted';
-				ELSE
-					ECHO SELECT  _Id as "Id",_Name as "Name",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Partial combination exist for RoleId or UserId  columns';
-				END IF;
 			END IF;
             Return _Id;
 END //
 DELIMITER ;
 
+USE refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE `spDMLAspNetRolesDEL`(_Id VARCHAR(128) NULL)
+RETURNS TEXT AS
+BEGIN
+	IF (_Id IS NOT NULL) THEN
+		DELETE FROM AspNetRoles WHERE Id = _Id; 
+		DELETE FROM AspNetUserRoles WHERE RoleId = _Id;
+		DELETE FROM RolesAppModule WHERE RoleId = _Id;
+		COMMIT;
+	ELSE
+		ECHO SELECT "FAIL";
+	END IF; 
+	ECHO SELECT "SUCCESS";
+END // 
+DELIMITER ; 
 
 use refmaster_internal_DEV;
 DELIMITER //
@@ -282,26 +355,10 @@ _RoleId VARCHAR(128)) RETURNS text AS
 					ECHO SELECT v_count,v_count2, 'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				SELECT Count(*) FROM  AspNetRoles WHERE Id=_RoleId into v_del_count1;
-				SELECT Count(*) FROM  AspNetUsers WHERE Id=_UserId into v_del_count2;
-
-				IF (v_count2=1) Then
-					IF(v_del_count1 =0 and v_del_count2 = 0) Then
-						DELETE FROM  AspNetUserRoles WHERE UserId=_UserId and RoleId=_RoleId;
-						COMMIT;
-                        ECHO SELECT  _UserId as "UserId", _RoleId as "RoleId",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Data Deleted';
-					ELSE
-						If (v_del_count1 !=0 and v_del_count2 !=0) Then
-							ECHO SELECT "Foreign Key constraint violet here for Table AspNetUsers field (UserId,Id)  and Table AspNetRoles field (RoleId,Id)";
-                        ELSEIF (v_del_count1 !=0) Then
-							ECHO SELECT "Foreign Key constraint violet here for Table AspNetRoles field (RoleId,Id)";
-                        ELSEIF (v_del_count2 !=0) Then
-							ECHO SELECT "Foreign Key constraint violet here for Table AspNetUsers field (UserId,Id)";
-                        END IF;
-					END IF;
-				ELSE
-					ECHO SELECT  _UserId as "UserId", _RoleId as "RoleId",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Partial combination exist for RoleId or UserId  columns';
-				END IF;
+					
+					DELETE FROM  AspNetUserRoles WHERE UserId=_UserId and RoleId=_RoleId;
+					COMMIT;
+					ECHO SELECT  _UserId as "UserId", _RoleId as "RoleId",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Data Deleted';
 			END IF;
             Return _UserId;
 END //
@@ -349,19 +406,41 @@ _LockoutEndDateUtc DATETIME DEFAULT NULL
 						END IF;
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT v_count,v_count2, 'Duplicate Date found!!!';
-                END IF;
-			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				IF (v_count2=1) Then
-					DELETE FROM  AspNetUsers WHERE Id=_Id;
-					COMMIT;
-					ECHO SELECT  _Id as "Id", _UserName as "_UserName",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Data Deleted';
-				ELSE
-					ECHO SELECT  _Id as "Id", _UserName as "_UserName",v_count as "Partial combination exists",v_count2 as "Exact combination exists", 'Partial combination exist for UserName or Id  columns';
 				END IF;
 			END IF;
             Return _Id;
 END //
 DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLAspNetUsersDEL(
+_Id VARCHAR(128)) RETURNS text AS
+	DECLARE 
+		v_del_count1 INT =0;
+        v_del_count2 INT =0;
+        v_del_count3 INT =0;
+        
+		BEGIN
+			SELECT Count(*) FROM  AspNetUserClaims WHERE UserId=_Id into v_del_count1;
+            SELECT Count(*) FROM  AspNetUserLogins WHERE UserId=_Id into v_del_count2;
+            SELECT Count(*) FROM  AspNetUserRoles WHERE UserId=_Id into v_del_count3;
+            
+			IF(v_del_count1=0 and v_del_count2=0 and v_del_count3=0) Then
+				DELETE FROM AspNetUsers WHERE ID=_Id;
+				COMMIT;
+				ECHO SELECT _ID as "ID", 'Data Deleted';
+			ELSEIF v_del_count1 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ExchangeVettingStatus field (AspNetUserClaims,Id)";
+			ELSEIF v_del_count2 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ExchangePair field (AspNetUserLogins,Id)";
+			ELSEIF v_del_count3 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ExchangeAvailability field (AspNetUserRoles,Id)";
+			END IF;
+		Return _Id;
+END //
+DELIMITER ;
+
 
 
 use refmaster_internal_DEV;
@@ -377,8 +456,7 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_del_count1 INT =0;
-        v_id BIGINT(16) = _Id;
+        v_id BIGINT(16) = _ID;
         BEGIN
             SELECT Count(*) FROM  AssetAvailability WHERE Id=_Id into v_count;
             SELECT NOW() into v_date;
@@ -391,20 +469,15 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                     ECHO SELECT v_id as "ID", 'Data Inserted';
    
 				ELSEIF(v_count = 1) Then
-						UPDATE  AssetAvailability SET AssetID=_AssetID , AvailabilityTypeID=_AvailabilityTypeID, IsActive=_IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_Id;
+						UPDATE  AssetAvailability SET AssetID=_AssetID , AvailabilityTypeID=_AvailabilityTypeID, IsActive=_IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_ID;
 						ECHO SELECT v_id as "ID",  'Data  Updated';
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				SELECT Count(*) FROM  Asset WHERE Id=_AssetID into v_del_count1;
-				IF(v_del_count1 =0) Then
-					DELETE FROM  AssetAvailability WHERE Id=_Id;
-					COMMIT;
-					ECHO SELECT  v_id as "ID",  'Data Deleted';
-				ELSE
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
-				END IF;
+				DELETE FROM  AssetAvailability WHERE Id=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID",  'Data Deleted';
 			END IF;
 					
             Return v_id;
@@ -424,8 +497,6 @@ _Id BIGINT(16) DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_del_count1 INT =0;
-        v_del_count2 INT =0;
         v_id BIGINT(16) = _Id;
         BEGIN
             SELECT Count(*) FROM  AssetCustodian WHERE AssetID=_AssetID and CustodianID=_CustodianID  into v_count;
@@ -445,23 +516,13 @@ _Id BIGINT(16) DEFAULT 1) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				SELECT Count(*) FROM  Asset WHERE Id=_AssetID into v_del_count1;
-                SELECT Count(*) FROM  Custodian WHERE Id=_CustodianID into v_del_count2;
-				IF(v_del_count1 =0 and v_del_count2 ) Then
-					DELETE FROM  AssetCustodian WHERE Id=_Id;
-					COMMIT;
-					ECHO SELECT v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
-				ELSEIF v_del_count2 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Custodian field (CustodianID,Id)";
-
-				END IF;
+				DELETE FROM  AssetCustodian WHERE Id=_Id;
+				COMMIT;
+				ECHO SELECT v_id as "ID", 'Data Deleted';
 			END IF;
             Return v_id;
 END //
 DELIMITER ;
-
 
 
 use refmaster_internal_DEV;
@@ -477,7 +538,6 @@ _Id BIGINT(16) DEFAULT 1) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_del_count1 INT =0;
-        v_del_count2 INT =0;
         v_id BIGINT(16) =  _Id;
         BEGIN
             SELECT Count(*) FROM  AssetTheme WHERE AssetID=_AssetID and ThemeID=_ThemeID  into v_count;
@@ -497,20 +557,35 @@ _Id BIGINT(16) DEFAULT 1) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				SELECT Count(*) FROM  Asset WHERE Id=_AssetID into v_del_count1;
-                SELECT Count(*) FROM  Theme WHERE Id=_ThemeID into v_del_count2;
-				IF(v_del_count1 =0 and v_del_count2=0 ) Then
+                SELECT Count(*) FROM  Theme WHERE Id=_ThemeID into v_del_count1;
+				IF(v_del_count1 =0) Then
+					DELETE t FROM AssetTheme t
+                    INNER JOIN Theme th on t.ThemeID = th.ID
+                    WHERE t.AssetID = _AssetID
+                    and th.Name = @theme
+                    and th.ThemeType = @themeType
 					DELETE FROM  AssetTheme WHERE Id=_Id;
 					COMMIT;
 					ECHO SELECT  v_id as "ID",'Data Deleted';
 				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
-				ELSEIF v_del_count2 !=0 Then
 					ECHO SELECT "Foreign Key constraint violet here for Table Theme field (ThemeID,Id)";
 
 				END IF;
 			END IF;
             Return v_id;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLAssetThemeDEL(
+_AssetID BIGINT(16) ,
+_ThemeType VARCHAR(100),
+_Theme VARCHAR(250)) AS
+	BEGIN 
+		DELETE t FROM AssetTheme t INNER JOIN Theme th on t.ThemeID = th.ID WHERE t.AssetID = _AssetID and th.Name = _Theme and th.ThemeType = _themeType;
+        COMMIT;
+		ECHO SELECT 'Data Deleted';
 END //
 DELIMITER ;
 
@@ -529,10 +604,7 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_del_count1 INT =0;
-        v_del_count2 INT =0;
-        v_del_count3 INT =0;
-        v_id BIGINT(16) =  _Id;
+        v_id BIGINT(16) =  _ID;
         BEGIN
             SELECT Count(*) FROM  AssetToken WHERE AssetID=_AssetID and TokenId=_TokenId and BlockChainId=_BlockChainId   into v_count;
             SELECT NOW() into v_date;
@@ -545,27 +617,16 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                     ECHO SELECT v_id as "ID", 'Data Inserted';
    
 				ELSEIF(v_count = 1) Then
-						UPDATE  AssetToken SET AssetID=_AssetID , TokenId=_TokenId, BlockChainId=_BlockChainId, TokenContractAddress=_TokenContractAddress, IsActive= _IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_Id;
+						UPDATE  AssetToken SET AssetID=_AssetID , TokenId=_TokenId, BlockChainId=_BlockChainId, TokenContractAddress=_TokenContractAddress, IsActive= _IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_ID;
 						ECHO SELECT v_id as "ID", 'Data  Updated';
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				SELECT Count(*) FROM  Asset WHERE Id=_AssetID into v_del_count1;
-                SELECT Count(*) FROM  Token WHERE Id=_TokenId into v_del_count2;
-                SELECT Count(*) FROM  BlockChain WHERE Id=_BlockChainId into v_del_count3;
-				IF(v_del_count1 =0 and v_del_count2  and v_del_count3) Then
-					DELETE FROM  AssetToken WHERE Id=_Id;
-					COMMIT;
-					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
-				ELSEIF v_del_count2 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (TokenId,Id)";
-				ELSEIF v_del_count3 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (BlockChainId,Id)";
-
-				END IF;
+                
+				DELETE FROM  AssetToken WHERE Id=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
 			END IF;
             Return v_id;
 END //
@@ -588,7 +649,7 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_user VARCHAR(100) = CURRENT_USER();
         v_del_count1 INT =0;
-        v_id BIGINT(16) =  _Id;
+        v_id BIGINT(16) =  _ID;
         BEGIN
             SELECT Count(*) FROM  AssetURL WHERE AssetID=_AssetID into v_count;
             SELECT USER() into v_user;
@@ -602,26 +663,19 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                     ECHO SELECT v_id as 'ID', 'Data Inserted';
    
 				ELSEIF(v_count = 1) Then
-						UPDATE  AssetURL SET AssetID=_AssetID , URLTypeID=_URLTypeID, URLPath=_URLPath, IsActive= _IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_Id;
+						UPDATE  AssetURL SET AssetID=_AssetID , URLTypeID=_URLTypeID, URLPath=_URLPath, IsActive= _IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_ID;
 						ECHO SELECT v_id as 'ID', 'Data  Updated';
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				SELECT Count(*) FROM  Asset WHERE Id=_AssetID into v_del_count1;
-                IF(v_del_count1 =0 ) Then
-					DELETE FROM  AssetURL WHERE Id=_Id;
-					COMMIT;
-					ECHO SELECT v_id as 'ID', 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
-				END IF;
+				DELETE FROM  AssetURL WHERE Id=_ID;
+				COMMIT;
+				ECHO SELECT v_id as 'ID', 'Data Deleted';
 			END IF;
             Return v_id;
 END //
 DELIMITER ;
-
-
 
 use refmaster_internal_DEV;
 DELIMITER //
@@ -638,10 +692,7 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_del_count1 INT =0;
-        v_del_count2 INT =0;
-        v_del_count3 INT =0;
-        v_id BIGINT(16) =  _Id;
+        v_id BIGINT(16) =  _ID;
         BEGIN
             SELECT Count(*) FROM AssetVettingStatus WHERE AssetID=_AssetID and ProcessId=_ProcessId and VettingStatusId=_VettingStatusId into v_count;
             SELECT NOW() into v_date;
@@ -654,29 +705,15 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                     ECHO SELECT v_id as "ID" , 'Data Inserted';
    
 				ELSEIF(v_count = 1) Then
-						UPDATE AssetVettingStatus SET AssetID=_AssetID , ProcessId=_ProcessId, VettingStatusId=_VettingStatusId, IndexStatus=_IndexStatus, IsActive= _IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_Id;
+						UPDATE AssetVettingStatus SET AssetID=_AssetID , ProcessId=_ProcessId, VettingStatusId=_VettingStatusId, IndexStatus=_IndexStatus, IsActive= _IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_ID;
 						ECHO SELECT  v_id as "ID", 'Data  Updated';
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-            
-				SELECT Count(*) FROM Asset WHERE Id=_AssetID into v_del_count1;
-                SELECT Count(*) FROM Process WHERE Id=_ProcessId into v_del_count2;
-                SELECT Count(*) FROM VettingStatus WHERE Id=_VettingStatusId into v_del_count3;
-                
-				IF(v_del_count1 =0 and v_del_count2=0  and v_del_count3=0) Then
-					DELETE FROM AssetVettingStatus WHERE Id=_Id;
-					COMMIT;
-					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
-				ELSEIF v_del_count2 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Process field (ProcessId,Id)";
-				ELSEIF v_del_count3 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table VettingStatus field (VettingStatusId,Id)";
-
-				END IF;
+				DELETE FROM AssetVettingStatus WHERE Id=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
 			END IF;
             Return v_id;
 END //
@@ -697,7 +734,8 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_id BIGINT(16) =  _Id;
+        v_id BIGINT(16) = _ID;
+        v_del_count1 INT= 0;
         BEGIN
             SELECT Count(*) FROM AvailabilityType WHERE DisplayName=_DisplayName and Name=_Name into v_count;
             SELECT NOW() into v_date;
@@ -710,18 +748,22 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                     ECHO SELECT v_id as "ID" , 'Data Inserted';
    
 				ELSEIF(v_count = 1) Then
-						UPDATE AvailabilityType SET Name=_Name , DisplayName=_DisplayName, APIName=_APIName, IsActive= _IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_Id;
+						UPDATE AvailabilityType SET Name=_Name , DisplayName=_DisplayName, APIName=_APIName, IsActive= _IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_ID;
 						ECHO SELECT  v_id as "ID", 'Data  Updated';
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                SELECT Count(*) FROM  EntityAvailabilityType WHERE AvailabilityTypeID=_ID into v_del_count1;
             
-				DELETE FROM AvailabilityType WHERE Id=_Id;
-				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
-				
-			END IF;
+				IF(v_del_count1=0) Then
+					DELETE FROM AvailabilityType WHERE Id=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table EntityAvailabilityType field (AvailabilityTypeID,Id)";
+				END IF;
+            END IF;
             Return v_id;
 END //
 DELIMITER ;
@@ -773,7 +815,8 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_id BIGINT(16) =  _Id;
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 INT =0;
         BEGIN
             SELECT Count(*) FROM BlockChain WHERE Name=_Name into v_count;
             SELECT NOW() into v_date;
@@ -786,18 +829,21 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                     ECHO SELECT v_id as "ID" , 'Data Inserted';
    
 				ELSEIF(v_count = 1) Then
-						UPDATE BlockChain SET Name=_Name , Description=_Description, ConsensusMechanism=_ConsensusMechanism, HashAlgorithm=_HashAlgorithm, IsActive= _IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_Id;
+						UPDATE BlockChain SET Name=_Name , Description=_Description, ConsensusMechanism=_ConsensusMechanism, HashAlgorithm=_HashAlgorithm, IsActive= _IsActive, LastEditUser=_LastEditUser, LastEditTime=v_date WHERE Id=_ID;
 						ECHO SELECT  v_id as "ID", 'Data  Updated';
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-            
-				DELETE FROM BlockChain WHERE Id=_Id;
-				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
-				
-			END IF;
+				SELECT Count(*) FROM  AssetToken WHERE BlockChainId=_ID into v_del_count1;
+				IF(v_del_count1=0 ) Then
+					DELETE FROM BlockChain WHERE Id=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table AssetToken field (BlockChainId,Id)";
+				END IF;
+            END IF;
             Return v_id;
 END //
 DELIMITER ;
@@ -821,6 +867,7 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
+        v_del_count1 int =0;
         BEGIN
             SELECT Count(*) FROM Clients WHERE CallerID=_CallerID into v_count;
             SELECT NOW() into v_date;
@@ -839,11 +886,16 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-            
-				DELETE FROM Clients WHERE Id=_Id;
-				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
 				
+                SELECT Count(*) FROM  ClientAssets WHERE ClientID=_ID into v_del_count1;
+            
+				IF(v_del_count1=0) Then
+					DELETE FROM Clients WHERE Id=_Id;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table ClientAssets field (ClientID,Id)";
+					END IF;
 			END IF;
             Return v_id;
 END //
@@ -882,7 +934,6 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-            
 				DELETE FROM ClientAssets WHERE Id=_Id;
 				COMMIT;
 				ECHO SELECT  v_id as "ID", 'Data Deleted';
@@ -906,7 +957,8 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_id BIGINT(16) =  _Id;
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 INT =0;
         BEGIN
             SELECT Count(*) FROM Custodian WHERE Name=_Name into v_count;
             SELECT NOW() into v_date;
@@ -919,16 +971,20 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                     ECHO SELECT v_id as "ID" , 'Data Inserted';
    
 				ELSEIF(v_count = 1) Then
-						UPDATE Custodian SET Description=_Description,LastEditUser=_LastEditUser, IsActive=_IsActive, LastEditTime=v_date WHERE Id=_Id;
+						UPDATE Custodian SET Description=_Description,LastEditUser=_LastEditUser, IsActive=_IsActive, LastEditTime=v_date WHERE Id=_ID;
 						ECHO SELECT  v_id as "ID", 'Data  Updated';
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-            
-				DELETE FROM Custodian WHERE Id=_Id;
-				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
+				SELECT Count(*) FROM  AssetCustodian WHERE CustodianID=_ID into v_del_count1;
+				IF(v_del_count1=0) Then
+					DELETE FROM Custodian WHERE Id=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table AssetCustodian field (CustodianID,Id)";
+				END IF;
 				
 			END IF;
             Return v_id;
@@ -1119,7 +1175,8 @@ _CreateUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 	DECLARE 
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_id BIGINT(16) =  _Id;
+        v_id BIGINT(16) =  _ID;
+        v_del_count1 INT =0;
         BEGIN
             SELECT Count(*) FROM Event WHERE Id=_Id into v_count;
             SELECT NOW() into v_date;
@@ -1132,19 +1189,25 @@ _CreateUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
                     ECHO SELECT v_id as "ID" , 'Data Inserted';
    
 				ELSEIF(v_count = 1) Then
-						UPDATE Event SET EventName=_EventName, CreateUser=_CreateUser, CreateTime=v_date WHERE Id=_Id;
+						UPDATE Event SET EventName=_EventName, CreateUser=_CreateUser, CreateTime=v_date WHERE Id=_ID;
 						ECHO SELECT  v_id as "ID", 'Data  Updated';
 				ELSEIF(v_count > 1) Then
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				DELETE FROM Event WHERE Id=_Id;
-				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
-			END IF;
+                SELECT Count(*) FROM  Staging_CryptoNodeEvents WHERE EventTypeID=_ID into v_del_count1;
+				IF(v_del_count1=0) Then
+					DELETE FROM Event WHERE Id=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Staging_CryptoNodeEvents field (EventTypeID,Id)";
+				END IF;
+            END IF;
             Return v_id;
 END //
 DELIMITER ;
+
 
 use refmaster_internal_DEV;
 DELIMITER //
@@ -1175,7 +1238,6 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _DAREventID;
-        v_del_count1 INT = 0;
         BEGIN
             SELECT Count(*) FROM EventInformation WHERE DAREventID=_DAREventID into v_count;
             SELECT NOW() into v_date;
@@ -1201,16 +1263,9 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				
-                SELECT Count(*) FROM Asset WHERE ID=_AssetID into v_del_count1;
-                
-                IF(v_del_count1 =0 ) Then
-					DELETE FROM EventInformation WHERE DAREventID=_DAREventID;
-					COMMIT;
-					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
-				END IF;
+				DELETE FROM EventInformation WHERE DAREventID=_DAREventID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
 			END IF;
             Return v_id;
 END //
@@ -1439,6 +1494,43 @@ DELIMITER ;
 
 use refmaster_internal_DEV;
 DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLExchangeDEL(
+_ID BIGINT(16)) RETURNS text AS
+	DECLARE 
+		v_del_count1 INT =0;
+        v_del_count2 INT =0;
+        v_del_count3 INT =0;
+        v_del_count4 INT =0;
+        v_del_count5 INT =0;
+        
+		BEGIN
+			SELECT Count(*) FROM  ExchangeVettingStatus WHERE ExchangeId=_ID into v_del_count1;
+            SELECT Count(*) FROM  ExchangePair WHERE ExchangeID=_ID into v_del_count2;
+            SELECT Count(*) FROM  ExchangeAvailability WHERE ExchangeID=_ID into v_del_count3;
+            SELECT Count(*) FROM  ExchangeURL WHERE ExchangeID=_ID into v_del_count4;
+            SELECT Count(*) FROM  Listing WHERE ExchangeID=_ID into v_del_count5;
+            
+			IF(v_del_count1=0 and v_del_count2=0 and v_del_count3=0 and v_del_count4=0 and v_del_count5=0) Then
+				DELETE FROM Exchange WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT _ID as "ID", 'Data Deleted';
+			ELSEIF v_del_count1 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ExchangeVettingStatus field (ExchangeId,Id)";
+			ELSEIF v_del_count2 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ExchangePair field (ExchangeId,Id)";
+			ELSEIF v_del_count3 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ExchangeAvailability field (ExchangeId,Id)";
+			ELSEIF v_del_count4 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ExchangeURL field (ExchangeId,Id)";
+			ELSEIF v_del_count5 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table Listing field (ExchangeId,Id)";
+			END IF;
+		Return _ID;
+END //
+DELIMITER ;
+
+use refmaster_internal_DEV;
+DELIMITER //
 CREATE OR REPLACE PROCEDURE spDMLExchangeAvailability(
 _OPERATION VARCHAR(20),
 _ExchangeID BIGINT(16),
@@ -1451,7 +1543,6 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
-        v_del_count1 INT = 0;
         BEGIN
             SELECT Count(*) FROM ExchangeAvailability WHERE ID=_ID into v_count;
             SELECT NOW() into v_date;
@@ -1471,16 +1562,9 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				
-                SELECT Count(*) FROM Exchange WHERE ID=_ExchangeID into v_del_count1;
-                
-                IF(v_del_count1 =0 ) Then
-					DELETE FROM ExchangeAvailability WHERE ID=_ID;
-					COMMIT;
-					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Exchange field (ExchangeID,Id)";
-				END IF;
+				DELETE FROM ExchangeAvailability WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
 			END IF;
             Return v_id;
 END //
@@ -1515,7 +1599,6 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
-        v_del_count1 INT = 0;
         v_del_count2 INT = 0;
         BEGIN
             SELECT Count(*) FROM ExchangePair WHERE ID=_ID into v_count;
@@ -1540,16 +1623,13 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
 				
-                SELECT Count(*) FROM Exchange WHERE ID=_ExchangeID into v_del_count1;
                 SELECT Count(*) FROM Pair WHERE ID=_PairID into v_del_count2;
 
                 
-                IF(v_del_count1 =0 and v_del_count2=0) Then
+                IF(v_del_count2=0) Then
 					DELETE FROM ExchangePair WHERE ID=_ID;
 					COMMIT;
 					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Exchange field (ExchangeID,Id)";
 				ELSEIF v_del_count2 !=0 Then
 					ECHO SELECT "Foreign Key constraint violet here for Table Pair field (PairID,Id)";
 				END IF;
@@ -1615,7 +1695,6 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
-        v_del_count1 INT = 0;
        
         BEGIN
             SELECT Count(*) FROM ExchangeURL WHERE ID=_ID into v_count;
@@ -1637,15 +1716,9 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
 				
-                SELECT Count(*) FROM Exchange WHERE ID=_ExchangeID into v_del_count1;
-                
-                IF(v_del_count1 =0 ) Then
-					DELETE FROM ExchangeURL WHERE ID=_ID;
-					COMMIT;
-					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Exchange field (ExchangeID,Id)";
-				END IF;
+				DELETE FROM ExchangeURL WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
 			END IF;
             Return v_id;
 END //
@@ -1667,7 +1740,6 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
-        v_del_count1 INT = 0;
         v_del_count2 INT = 0;
         v_del_count3 INT = 0;
        
@@ -1690,16 +1762,13 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
 				
-                SELECT Count(*) FROM Exchange WHERE ID=_ExchangeId into v_del_count1;
                 SELECT Count(*) FROM Process WHERE ID=_ProcessId into v_del_count2;
                 SELECT Count(*) FROM VettingStatus WHERE ID=_VettingStatusId into v_del_count3;
                 
-                IF(v_del_count1 =0 and v_del_count2 =0 and v_del_count3 =0) Then
+                IF(v_del_count2 =0 and v_del_count3 =0) Then
 					DELETE FROM ExchangeVettingStatus WHERE ID=_ID;
 					COMMIT;
 					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Exchange field (ExchangeID,Id)";
 				ELSEIF v_del_count2 !=0 Then
 					ECHO SELECT "Foreign Key constraint violet here for Table Process field (ProcessId,Id)";
 				ELSEIF v_del_count3 !=0 Then
@@ -1709,8 +1778,6 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
             Return v_id;
 END //
 DELIMITER ;
-
-
 
 use refmaster_internal_DEV;
 DELIMITER //
@@ -1730,7 +1797,6 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
         v_del_count1 INT = 0;
-        v_del_count2 INT = 0;
        
         BEGIN
             SELECT Count(*) FROM Listing WHERE AssetID=_AssetID and ExchangeID=_ExchangeID and ExchangeAssetTicker=_ExchangeAssetTicker into v_count;
@@ -1750,21 +1816,15 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				
-                SELECT Count(*) FROM Asset WHERE ID=_AssetID into v_del_count1;
-                SELECT Count(*) FROM Exchange WHERE ID=_ExchangeID into v_del_count2;
-                
-                IF(v_del_count1 =0 and v_del_count2 =0) Then
+                SELECT Count(*) FROM  Stage_CollectedListing WHERE ListingID=_ID into v_del_count1;
+				IF(v_del_count1=0) Then
 					DELETE FROM Listing WHERE ID=_ID;
 					COMMIT;
-					ECHO SELECT  v_id as "ID", 'Data Deleted';
+					ECHO SELECT _ID as "ID", 'Data Deleted';
 				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
-				ELSEIF v_del_count2 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Exchange field (ExchangeID,Id)";
-				
+					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectedListing field (ListingID,Id)";
 				END IF;
-			END IF;
+            END IF;
             Return v_id;
 END //
 DELIMITER ;
@@ -1869,8 +1929,8 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 		v_count INT =0;
         v_id BIGINT(16) =  _ID;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_del_count1 INT = 0;
-        v_del_count2 INT = 0;
+        v_del_count1 INT =0;
+        v_del_count2 INT =0;
        
         BEGIN
             SELECT Count(*) FROM Pair WHERE DARName=_DARName into v_count;
@@ -1890,22 +1950,23 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				SELECT Count(*) FROM Asset WHERE ID=_AssetID into v_del_count1;
-                SELECT Count(*) FROM Asset WHERE ID=_QuoteAssetID into v_del_count2;
-				
-                IF(v_del_count1 = 0 and v_del_count2 =0) Then
-					DELETE FROM Pair WHERE ID=_ID;
-					COMMIT;
-					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
-				ELSEIF v_del_count2 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (QuoteAssetID,Id)";
+                SELECT Count(*) FROM  ExchangePair WHERE PairID=_ID into v_del_count1;
+				SELECT Count(*) FROM  ServingList WHERE PairID=_ID into v_del_count2;
+            
+			IF(v_del_count1=0 and v_del_count2=0) Then
+				DELETE FROM Pair WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT _ID as "ID", 'Data Deleted';
+			ELSEIF v_del_count1 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ExchangePair field (PairID,Id)";
+			ELSEIF v_del_count2 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ServingList field (PairID,Id)";
 				END IF;
-			END IF;
+            END IF;
             Return v_id;
 END //
 DELIMITER ;
+
 
 
 use refmaster_internal_DEV;
@@ -1947,13 +2008,22 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
+                SELECT Count(*) FROM  AssetVettingStatus WHERE ProcessId=_ID into v_del_count1;
+				SELECT Count(*) FROM  ExchangeVettingStatus WHERE ProcessId=_ID into v_del_count2;
+			IF(v_del_count1=0 and v_del_count2=0) Then
 				DELETE FROM Process WHERE ID=_ID;
 				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
-			END IF;
+				ECHO SELECT _ID as "ID", 'Data Deleted';
+			ELSEIF v_del_count1 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table AssetVettingStatus field (ProcessId,Id)";
+			ELSEIF v_del_count2 !=0 Then
+				ECHO SELECT "Foreign Key constraint violet here for Table ExchangeVettingStatus field (ProcessId,Id)";
+				END IF;
+            END IF;
             Return v_id;
 END //
 DELIMITER ;
+
 
 use refmaster_internal_DEV;
 DELIMITER //
@@ -2024,6 +2094,9 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
         v_del_count1 INT = 0;
+        v_del_count2 INT = 0;
+        v_del_count3 INT = 0;
+        v_del_count4 INT = 0;
        
         BEGIN
             SELECT Count(*) FROM SDataType WHERE DisplayName=_DisplayName or Name=_Name into v_count;
@@ -2044,8 +2117,10 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				
-                SELECT Count(*) FROM SDataType WHERE ID=_ ParentTypeID into v_del_count1;
+                SELECT Count(*) FROM SDataType WHERE ParentTypeID=_ID into v_del_count1;
+                SELECT Count(*) FROM SEntityAttribute WHERE DataTypeID=_ID into v_del_count2;
+                SELECT Count(*) FROM SSharedColumn WHERE DataTypeID=_ID into v_del_count3;
+                SELECT Count(*) FROM STableType WHERE OverrideDataTypeID=_ID into v_del_count4;
                 
                 IF(v_del_count1 =0 ) Then
 					DELETE FROM SDataType WHERE ID=_ID;
@@ -2053,6 +2128,12 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  v_id as "ID", 'Data Deleted';
 				ELSEIF v_del_count1 !=0 Then
 					ECHO SELECT "Foreign Key constraint violet here for Table SDataType field (ParentTypeID,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEntityAttribute field (DataTypeID,Id)";
+				ELSEIF v_del_count3 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SSharedColumn field (DataTypeID,Id)";
+				ELSEIF v_del_count4 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table STableType field (OverrideDataTypeID,Id)";
 				END IF;
 			END IF;
             Return v_id;
@@ -2077,6 +2158,9 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
         v_del_count1 INT = 0;
+        v_del_count2 INT = 0;
+        v_del_count3 INT = 0;
+        v_del_count4 INT = 0;
        
         BEGIN
             SELECT Count(*) FROM SEntity WHERE DisplayName=_DisplayName or Name=_Name into v_count;
@@ -2097,15 +2181,24 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				
-                SELECT Count(*) FROM SEntityCategory WHERE ID=_CategoryID into v_del_count1;
+
+                SELECT Count(*) FROM EntityAvailabilityType WHERE EntityID=_ID into v_del_count1;
+                SELECT Count(*) FROM EntityURLType WHERE EntityID=_ID into v_del_count12;
+                SELECT Count(*) FROM SEntityAttribute WHERE EntityID=_ID into v_del_count13;
+                SELECT Count(*) FROM STable WHERE EntityID=_ID into v_del_count4;
                 
-                IF(v_del_count1 =0 ) Then
+                IF(v_del_count1 =0 and v_del_count2 =0 and v_del_count3 =0 and v_del_count4 =0 ) Then
 					DELETE FROM SEntity WHERE ID=_ID;
 					COMMIT;
 					ECHO SELECT  v_id as "ID", 'Data Deleted';
 				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table SEntityCategory field (CategoryID,Id)";
+					ECHO SELECT "Foreign Key constraint violet here for Table EntityAvailabilityType field (EntityID,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table EntityURLType field (EntityID,Id)";
+				ELSEIF v_del_count3 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEntityAttribute field (EntityID,Id)";
+				ELSEIF v_del_count4 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table STable field (EntityID,Id)";
 				END IF;
 			END IF;
             Return v_id;
@@ -2190,6 +2283,7 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
+        v_del_count1 INT =0;
        
         BEGIN
             SELECT Count(*) FROM SEntityCategory WHERE Name=_Name and DisplayName=_DisplayName  into v_count;
@@ -2210,10 +2304,16 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-                DELETE FROM SEntityCategory WHERE ID=_ID;
-				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
-			END IF;
+				SELECT Count(*) FROM  SEntity WHERE CategoryID=_ID into v_del_count1;
+            
+				IF(v_del_count1=0) Then
+					DELETE FROM SEntityCategory WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEntity field (CategoryID,Id)";
+				END IF;
+            END IF;
             Return v_id;
 END //
 DELIMITER ;
@@ -2237,6 +2337,8 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
+        v_del_count1 INT =0;
+        v_del_count2 INT =0;
        
         BEGIN
             SELECT Count(*) FROM SEnumeration WHERE Name=_Name and DisplayName=_DisplayName  into v_count;
@@ -2257,10 +2359,19 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-                DELETE FROM SEnumeration WHERE ID=_ID;
-				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
-			END IF;
+				SELECT Count(*) FROM  SEntityAttribute WHERE EnumerationID=_ID into v_del_count5;
+                SELECT Count(*) FROM  SEnumerationValue WHERE EnumerationID=_ID into v_del_count5;
+            
+				IF(v_del_count1=0 and v_del_count2=0 ) Then
+					DELETE FROM SEnumeration WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEntityAttribute field (EnumerationID,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SEnumerationValue field (EnumerationID,Id)";
+					END IF;
+				END IF;
             Return v_id;
 END //
 DELIMITER ;
@@ -2514,6 +2625,7 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
+        v_del_count1 INT =0;
        
         BEGIN
             SELECT Count(*) FROM Source WHERE DARSourceID=_DARSourceID or  ShortName=_ShortName into v_count;
@@ -2534,10 +2646,14 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-               
-				DELETE FROM Source WHERE ID=_ID;
-				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
+                SELECT Count(*) FROM  Staging_CryptoNodeEvents WHERE SourceID=_ID into v_del_count1;
+                IF(v_del_count1=0) Then
+					DELETE FROM Source WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table ExchangeVettingStatus field (ExchangeId,Id)";
+				END IF;
 			END IF;
             Return v_id;
 END //
@@ -2562,6 +2678,8 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
+        v_del_count1 INT =0;
+        v_del_count2 INT =0;
        
         BEGIN
             SELECT Count(*) FROM SSchemaVersion WHERE ID=_ID into v_count;
@@ -2582,15 +2700,22 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-               
-				DELETE FROM SSchemaVersion WHERE ID=_ID;
-				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
-			END IF;
+				SELECT Count(*) FROM  SSharedColumn WHERE VersionID=_ID into v_del_count1;
+				SELECT Count(*) FROM  STable WHERE VersionID=_ID into v_del_count2;
+            
+				IF(v_del_count1=0 and v_del_count2=0) Then
+					DELETE FROM SSchemaVersion WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table SSharedColumn field (VersionID,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table STable field (VersionID,Id)";
+				END IF;
+            END IF;
             Return v_id;
 END //
 DELIMITER ;
-
 
 use refmaster_internal_DEV;
 DELIMITER //
@@ -2777,6 +2902,7 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
+        v_del_count1 INT =0;
        
         BEGIN
             SELECT Count(*) FROM STableJoinDirection WHERE ID=_ID into v_count;
@@ -2797,12 +2923,15 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-            
-				DELETE FROM STableJoinDirection WHERE ID=_ID;
-				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
-                
-			END IF;
+				SELECT Count(*) FROM  STableJoin WHERE JoinDirectionID=_ID into v_del_count1;
+				IF(v_del_count1=0 ) Then
+					DELETE FROM STableJoinDirection WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table STableJoin field (JoinDirectionID,Id)";
+				END IF;
+            END IF;
             Return v_id;
 END //
 DELIMITER ;
@@ -2844,17 +2973,15 @@ _LastEditUser VARCHAR(100) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				SELECT Count(*) FROM SDataType WHERE ID=_OverrideDataTypeID into v_del_count1;
+				SELECT Count(*) FROM STable WHERE TypeID=_ID into v_del_count1;
                 
                 IF(v_del_count1 =0) Then
 					DELETE FROM STableType WHERE ID=_ID;
 					COMMIT;
 					ECHO SELECT  v_id as "ID", 'Data Deleted';
                 ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table SDataType field (_OverrideDataTypeID,Id)";
+					ECHO SELECT "Foreign Key constraint violet here for Table STable field (TypeID,Id)";
 				END IF;    
-				
-                
 			END IF;
             Return v_id;
 END //
@@ -2882,7 +3009,6 @@ _ExcludeDuplicate TINYINT  DEFAULT NULL
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
-        v_del_count1 int =0;
        
         BEGIN
             SELECT Count(*) FROM Stage_CollectedListing WHERE ID=_ID into v_count;
@@ -2907,15 +3033,10 @@ _ExcludeDuplicate TINYINT  DEFAULT NULL
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-                SELECT Count(*) FROM Stage_CollectionSource WHERE ID=_CollectionSourceID into v_del_count1;
                 
-                IF(v_del_count1 =0 ) Then
-					DELETE FROM Stage_CollectedListing WHERE ID=_ID;
-					COMMIT;
-					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionSource field (CollectionSourceID,Id)";
-				END IF;
+				DELETE FROM Stage_CollectedListing WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
 			END IF;
             Return v_id;
 END //
@@ -2940,6 +3061,8 @@ _MatchesPrevious TINYINT DEFAULT NULL
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
         v_del_count1 int =0;
+        v_del_count2 int =0;
+        v_del_count3 int =0;
        
         BEGIN
             SELECT Count(*) FROM Stage_CollectionBatch WHERE ID=_ID into v_count;
@@ -2961,14 +3084,21 @@ _MatchesPrevious TINYINT DEFAULT NULL
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-                SELECT Count(*) FROM Stage_CollectionBatchType WHERE ID= _CollectionBatchTypeID into v_del_count1;
+
+                SELECT Count(*) FROM Stage_CollectionBatch WHERE PreviousBatchID= _ID into v_del_count1;
+                SELECT Count(*) FROM Stage_CollectionSource WHERE CollectionBatchID= _ID into v_del_count2;
+                SELECT Count(*) FROM Stage_CollectionValidation WHERE CollectionBatchID= _ID into v_del_count3;
                 
-                IF(v_del_count1 =0 ) Then
+                IF(v_del_count1 =0 and v_del_count2 =0 and v_del_count3 =0 ) Then
 					DELETE FROM Stage_CollectionBatch WHERE ID=_ID;
 					COMMIT;
 					ECHO SELECT  v_id as "ID", 'Data Deleted';
 				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionBatchType field (CollectionBatchTypeID,Id)";
+					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionBatch field (PreviousBatchID,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionSource field (CollectionBatchID,Id)";
+				ELSEIF v_del_count3 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionValidation field (CollectionBatchID,Id)";
 				END IF;
 			END IF;
             Return v_id;
@@ -2990,8 +3120,6 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
         v_del_count1 int =0;
-        v_del_count2 int =0;
-        v_del_count3 int =0;
        
         BEGIN
             SELECT Count(*) FROM Stage_CollectionBatchType WHERE Name=_Name or ID=_ID into v_count;
@@ -3012,20 +3140,14 @@ _IsActive TINYINT DEFAULT 1) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				SELECT Count(*) FROM SEntity WHERE ID=_CollectedEntityID into v_del_count1;
-                SELECT Count(*) FROM SEntity WHERE ID=_TargetEntityID into v_del_count2;
-                SELECT Count(*) FROM SEntityAttribute WHERE ID=_CollectionKeyAttributeID into v_del_count3;
+				SELECT Count(*) FROM Stage_CollectionBatch WHERE CollectionBatchTypeID=_ID into v_del_count1;
                 
-                IF(v_del_count1 =0 and v_del_count2=0 and v_del_count3=0) Then
+                IF(v_del_count1 =0) Then
 					DELETE FROM Stage_CollectionBatchType WHERE ID=_ID;
 					COMMIT;
 					ECHO SELECT  v_id as "ID", 'Data Deleted';
 				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table SEntity field (CollectedEntityID,Id)";
-				ELSEIF v_del_count2 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table SEntity field (TargetEntityID,Id)";
-				ELSEIF v_del_count3 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table SEntityAttribute field (CollectionKeyAttributeID,Id)";
+					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionBatch field (CollectionBatchTypeID,Id)";
 				END IF;
                 
 			END IF;
@@ -3075,14 +3197,14 @@ _EntityDbID INT DEFAULT NULL
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-                SELECT Count(*) FROM Stage_CollectionSource WHERE ID= _CollectionBatchID into v_del_count1;
+                SELECT Count(*) FROM Stage_CollectedListing WHERE CollectionSourceID=_ID into v_del_count1;
                 
                 IF(v_del_count1 =0 ) Then
 					DELETE FROM Stage_CollectionSource WHERE ID=_ID;
 					COMMIT;
 					ECHO SELECT  v_id as "ID", 'Data Deleted';
 				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectionSource field (CollectionBatchID,Id)";
+					ECHO SELECT "Foreign Key constraint violet here for Table Stage_CollectedListing field (CollectionSourceID,Id)";
 				END IF;
 			END IF;
             Return v_id;
@@ -3169,9 +3291,6 @@ _Error VARCHAR(500) DEFAULT NULL) RETURNS text AS
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
-        v_del_count1 int =0;
-        v_del_count2 int =0;
-        v_del_count3 int =0;
        
         BEGIN
             SELECT Count(*) FROM Staging_CryptoNodeEvents WHERE ID=_ID into v_count;
@@ -3193,22 +3312,10 @@ _Error VARCHAR(500) DEFAULT NULL) RETURNS text AS
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				SELECT Count(*) FROM Asset WHERE ID=_AssetID into v_del_count1;
-                SELECT Count(*) FROM Source WHERE ID=_SourceID into v_del_count2;
-                SELECT Count(*) FROM Event WHERE ID=_EventTypeID into v_del_count3;
-                
-                IF(v_del_count1 =0 and v_del_count2=0 and v_del_count3=0) Then
-					DELETE FROM Staging_CryptoNodeEvents WHERE ID=_ID;
-					COMMIT;
-					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Asset field (AssetID,Id)";
-				ELSEIF v_del_count2 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Source field (SourceID,Id)";
-				ELSEIF v_del_count3 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Event field (EventTypeID,Id)";
-				END IF;
-                
+
+                DELETE FROM Staging_CryptoNodeEvents WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
 			END IF;
             Return v_id;
 END //
@@ -3235,7 +3342,6 @@ _BaseDataAvailable TINYINT DEFAULT NULL
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
-        v_del_count1 int =0;
        
         BEGIN
             SELECT Count(*) FROM Staging_OutstandingSupply WHERE ID=_ID into v_count;
@@ -3257,15 +3363,9 @@ _BaseDataAvailable TINYINT DEFAULT NULL
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-                SELECT Count(*) FROM Staging_OutstandingSupply WHERE ID= _AssetID into v_del_count1;
-                
-                IF(v_del_count1 =0 ) Then
-					DELETE FROM Staging_OutstandingSupply WHERE ID=_ID;
-					COMMIT;
-					ECHO SELECT  v_id as "ID", 'Data Deleted';
-				ELSEIF v_del_count1 !=0 Then
-					ECHO SELECT "Foreign Key constraint violet here for Table Staging_OutstandingSupply field (AssetID,Id)";
-				END IF;
+				DELETE FROM Staging_OutstandingSupply WHERE ID=_ID;
+				COMMIT;
+				ECHO SELECT  v_id as "ID", 'Data Deleted';
 			END IF;
             Return v_id;
 END //
@@ -3308,10 +3408,16 @@ _LastEditUser VARCHAR(100) DEFAULT NULL
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				DELETE FROM Theme WHERE ID=_ID;
-				COMMIT;
-                ECHO SELECT  v_id as "ID", 'Data Deleted';
-			END IF;
+                SELECT Count(*) FROM  AssetTheme WHERE ThemeID=_ID into v_del_count1;
+            
+				IF(v_del_count1=0) Then
+					DELETE FROM Theme WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table AssetTheme field (ThemeID,Id)";
+				END IF;
+            END IF;
             Return v_id;
             
 END //
@@ -3354,14 +3460,20 @@ _LastEditUser VARCHAR(100) DEFAULT NULL
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				DELETE FROM URLType WHERE ID=_ID;
-				COMMIT;
-                ECHO SELECT  v_id as "ID", 'Data Deleted';
-			END IF;
+                SELECT Count(*) FROM  EntityURLType WHERE URLTypeID=_ID into v_del_count1;
+				IF(v_del_count1=0) Then
+					DELETE FROM URLType WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table EntityURLType field (URLTypeID,Id)";
+					END IF;
+				END IF;
             Return v_id;
             
 END //
 DELIMITER ;
+
 
 use refmaster_internal_DEV;
 DELIMITER //
@@ -3400,12 +3512,16 @@ _LastEditUser VARCHAR(100) DEFAULT NULL
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				DELETE FROM Token WHERE ID=_ID;
-				COMMIT;
-                ECHO SELECT  v_id as "ID", 'Data Deleted';
-			END IF;
+                SELECT Count(*) FROM  AssetToken WHERE TokenId=_ID into v_del_count1;
+				IF(v_del_count1=0) Then
+					DELETE FROM Token WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table AssetToken field (TokenId,Id)";
+				END IF;
+            END IF;
             Return v_id;
-            
 END //
 DELIMITER ;
 
@@ -3426,6 +3542,7 @@ _LastEditUser VARCHAR(100) DEFAULT NULL
         v_date DATETIME = CURRENT_TIMESTAMP();
         v_id BIGINT(16) =  _ID;
         v_del_count1 int =0;
+        v_del_count2 int =0;
        
         BEGIN
             SELECT Count(*) FROM VettingStatus WHERE StatusDescription=_StatusDescription and ID=_ID into v_count;
@@ -3446,9 +3563,18 @@ _LastEditUser VARCHAR(100) DEFAULT NULL
 					ECHO SELECT  'Duplicate Date found!!!';
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				DELETE FROM VettingStatus WHERE ID=_ID;
-				COMMIT;
-                ECHO SELECT  v_id as "ID", 'Data Deleted';
+                SELECT Count(*) FROM  AssetVettingStatus WHERE ExchangeId=_ID into v_del_count1;
+				SELECT Count(*) FROM  ExchangeVettingStatus WHERE ExchangeID=_ID into v_del_count2;
+            
+				IF(v_del_count1=0 and v_del_count2=0) Then
+					DELETE FROM VettingStatus WHERE ID=_ID;
+					COMMIT;
+					ECHO SELECT _ID as "ID", 'Data Deleted';
+				ELSEIF v_del_count1 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table AssetVettingStatus field (VettingStatusId,Id)";
+				ELSEIF v_del_count2 !=0 Then
+					ECHO SELECT "Foreign Key constraint violet here for Table ExchangeVettingStatus field (VettingStatusId,Id)";
+				END IF;
 			END IF;
             Return v_id;
             
