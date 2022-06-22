@@ -3435,5 +3435,33 @@ inner join ClientAssets ca on c.ID = ca.ClientID
 inner join Asset a on a.ID = ca.AssetID;
 
 
+OutstandingSupply_Audit
+SQL SERVER SCRIPT
+CREATE TABLE [dbo].[OutstandingSupply_Audit](
+	[ChangeID] [int] IDENTITY(10000,1) NOT NULL,
+	[ID] [nvarchar](20) NOT NULL,
+	[AssetID] [int] NOT NULL,
+	[ProcessID] [int] NOT NULL,
+	[OutstandingSupply] [decimal](18, 0) NULL,
+	[CollectedTimeStamp] [datetime] NULL,
+	[IsActive] [bit] NULL,
+	[Reviewed] [bit] NULL,
+	[operation] [varchar](15) NOT NULL
+) ON [PRIMARY]
+
+
+SINGLE STORE SCRIPT
+
+CREATE TABLE refmaster_internal_DEV.OutstandingSupply_Audit(
+	ChangeID INT NOT NULL AUTO_INCREMENT,
+	operation VARCHAR(15) NOT NULL,
+	ID BIGINT(16) NOT NULL,
+	AssetID INT NOT NULL,
+	ProcessID INT NOT NULL,
+	OutstandingSupply DECIMAL(18, 0) NOT NULL,
+	CollectedTimeStamp DATETIME NULL,
+	IsActive TINYINT NULL,
+	Reviewed TINYINT NULL,
+    PRIMARY KEY (ChangeID ASC));
 
 
