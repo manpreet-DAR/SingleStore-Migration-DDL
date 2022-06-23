@@ -1,0 +1,27 @@
+USE refmaster_internal_DEV;
+
+DELIMITER //
+CREATE OR REPLACE PROCEDURE spDMLRolesDEL(_RoleID VARCHAR(128)) AS
+DECLARE
+	role_tbl QUERY(id VARCHAR(128) NOT NULL) = SELECT Id FROM Roles WHERE RoleID= _RoleID;
+	qry QUERY(user_id VARCHAR(128) NOT NULL) = SELECT UserId FROM UserRoles WHERE RoleId = _RoleID; 
+	role VARCHAR(128); 
+    arr ARRAY(VARCHAR(128)); 
+BEGIN    
+	role = SCALAR(role_tbl);
+    arr = COLLECT(qry); 
+    FOR x in arr LOOP
+		CALL sp_DMLUsersDEL(x);
+	END LOOP; 
+	DELETE FROM RoleAppModule WHERE RoleId = _RoleID;
+	DELETE FROM Roles WHERE Id = _RoleID; 
+	COMMIT;
+	ECHO SELECT "SUCCESS" AS msg;
+    EXCEPTION
+		WHEN ER_SCALAR_BUILTIN_NO_ROWS THEN
+			ECHO SELECT "FAIL" AS msg; 
+END // 
+
+DELIMITER ;
+
+
