@@ -3465,3 +3465,143 @@ CREATE TABLE refmaster_internal_DEV.OutstandingSupply_Audit(
     PRIMARY KEY (ChangeID ASC));
 
 
+AspNetUsers -> Users
+SQL SERVER SCRIPT
+CREATE TABLE [dbo].[AspNetUsers](
+	[Id] [nvarchar](128) NOT NULL,
+	[Email] [nvarchar](256) NULL,
+	[EmailConfirmed] [bit] NOT NULL,
+	[PasswordHash] [nvarchar](max) NULL,
+	[SecurityStamp] [nvarchar](max) NULL,
+	[PhoneNumber] [nvarchar](max) NULL,
+	[PhoneNumberConfirmed] [bit] NOT NULL,
+	[TwoFactorEnabled] [bit] NOT NULL,
+	[LockoutEndDateUtc] [datetime] NULL,
+	[LockoutEnabled] [bit] NOT NULL,
+	[AccessFailedCount] [int] NOT NULL,
+	[UserName] [nvarchar](256) NOT NULL,
+ CONSTRAINT [PK_dbo.AspNetUsers] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+SINGLE STORE SCRIPT
+CREATE TABLE refmaster_internal_DEV.Users(
+	Id VARCHAR(128) NOT NULL,
+	Email VARCHAR(256) NULL,
+	EmailConfirmed TINYINT NOT NULL,
+	PasswordHash TEXT NULL,
+	SecurityStamp TEXT NULL,
+	PhoneNumber TEXT NULL,
+	PhoneNumberConfirmed TINYINT NOT NULL,
+	TwoFactorEnabled TINYINT NOT NULL,
+	LockoutEndDateUtc DATETIME NULL,
+	LockoutEnabled TINYINT NOT NULL,
+	AccessFailedCount INT NOT NULL,
+	UserName VARCHAR(256) NOT NULL,
+    PRIMARY KEY (Id ASC));
+
+
+AspNetUserClaims -> UserClaims
+SQL SERVER SCRIPT
+CREATE TABLE [dbo].[AspNetUserClaims](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [nvarchar](128) NOT NULL,
+	[ClaimType] [nvarchar](max) NULL,
+	[ClaimValue] [nvarchar](max) NULL,
+ CONSTRAINT [PK_dbo.AspNetUserClaims] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+CREATE NONCLUSTERED INDEX [IX_UserId] ON [dbo].[AspNetUserClaims]
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+
+SINGLE STORE SCRIPT
+
+CREATE TABLE refmaster_internal_DEV.UserClaims(
+	ID INT NOT NULL AUTO_INCREMENT,
+	UserId VARCHAR(128) NOT NULL,
+	ClaimType LONGTEXT NOT NULL,
+    ClaimValue LONGTEXT NULL,
+    ProductVersion VARCHAR(32)  NULL,
+    PRIMARY KEY (ID ASC),
+    SHARD KEY ( ID ASC));
+AspNetUserLogins -> UserLogins
+SQL SERVER SCRIPT
+CREATE TABLE [dbo].[AspNetUserLogins](
+	[LoginProvider] [nvarchar](128) NOT NULL,
+	[ProviderKey] [nvarchar](128) NOT NULL,
+	[UserId] [nvarchar](128) NOT NULL,
+ CONSTRAINT [PK_dbo.AspNetUserLogins] PRIMARY KEY CLUSTERED 
+(
+	[LoginProvider] ASC,
+	[ProviderKey] ASC,
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+CREATE NONCLUSTERED INDEX [IX_UserId] ON [dbo].[AspNetUserLogins]
+(
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[AspNetUserLogins]  WITH CHECK ADD  CONSTRAINT [FK_dbo.AspNetUserLogins_dbo.AspNetUsers_UserId] FOREIGN KEY([UserId])
+REFERENCES [dbo].[AspNetUsers] ([Id])
+ON DELETE CASCADE
+GO
+ALTER TABLE [dbo].[AspNetUserLogins] CHECK CONSTRAINT [FK_dbo.AspNetUserLogins_dbo.AspNetUsers_UserId]
+GO
+
+SINGLE STORE SCRIPT
+
+CREATE TABLE refmaster_internal_DEV.UserLogins(
+	LoginProvider VARCHAR(128) NOT NULL,
+	ProviderKey VARCHAR(128) NOT NULL,
+	UserId VARCHAR(128) NOT NULL,
+	PRIMARY KEY (LoginProvider ASC,ProviderKey ASC,UserId ASC),
+	SHARD KEY ( LoginProvider ASC,ProviderKey ASC,UserId ASC));
+
+
+AspNetRoles ->  NetRoles
+SQL SERVER SCRIPT
+CREATE TABLE [dbo].[AspNetRoles](
+	[Id] [nvarchar](128) NOT NULL,
+	[Name] [nvarchar](256) NOT NULL,
+ CONSTRAINT [PK_dbo.AspNetRoles] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+SINGLE STORE SCRIPT
+
+CREATE TABLE refmaster_internal_DEV.Roles(
+	Id VARCHAR(128) NOT NULL,
+	Name VARCHAR(256) NOT NULL,
+    PRIMARY KEY (ID ASC));
+
+AspNetUserRoles -> UserRoles
+SQL SERVER SCRIPT
+CREATE TABLE [dbo].[AspNetUserRoles](
+	[UserId] [nvarchar](128) NOT NULL,
+	[RoleId] [nvarchar](128) NOT NULL,
+ CONSTRAINT [PK_dbo.AspNetUserRoles] PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC,
+	[RoleId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+SINGLE STORE SCRIPT
+CREATE TABLE refmaster_internal_DEV.UserRoles(
+	UserId VARCHAR(128) NOT NULL,
+	RoleId VARCHAR(128) NOT NULL,
+    PRIMARY KEY (UserId ASC, RoleId ASC));
+
