@@ -1,0 +1,69 @@
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE refmaster_internal_DEV.spDMLAssetDEL(_DARAssetID varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL) RETURNS void AS
+DECLARE 
+	asset_id BIGINT; 
+	v_del_count2 INT =0;
+	v_del_count3 INT =0;
+	v_del_count4 INT =0;
+	v_del_count5 INT =0;
+	v_del_count6 INT =0;
+	v_del_count8 INT =0;
+	v_del_count9 INT =0;
+	v_del_count10 INT =0;
+	v_del_count11 INT =0;
+	v_del_count12 INT =0;
+	v_del_count13 INT =0;
+	v_del_count14 INT =0;
+	
+	BEGIN
+		SELECT ID from refmaster_internal_DEV.Asset WHERE DARAssetID=_DARAssetID INTO asset_id;
+		SELECT Count(*) FROM  refmaster_internal_DEV.ClientAssets WHERE AssetID=asset_id into v_del_count2;
+		SELECT Count(*) FROM  refmaster_internal_DEV.AssetToken WHERE AssetID=asset_id into v_del_count3;
+		SELECT Count(*) FROM  refmaster_internal_DEV.AssetVettingStatus WHERE AssetID=asset_id into v_del_count4;
+		SELECT Count(*) FROM  refmaster_internal_DEV.AssetAvailability WHERE AssetID=asset_id into v_del_count5;
+		SELECT Count(*) FROM  refmaster_internal_DEV.AssetCustodian WHERE AssetID=asset_id into v_del_count6;
+		SELECT Count(*) FROM  refmaster_internal_DEV.EventInformation WHERE AssetID=asset_id into v_del_count8;
+		SELECT Count(*) FROM  refmaster_internal_DEV.Listing WHERE AssetID=asset_id into v_del_count9;
+		SELECT Count(*) FROM  refmaster_internal_DEV.Pair WHERE AssetID=asset_id into v_del_count10;
+		SELECT Count(*) FROM  refmaster_internal_DEV.Pair WHERE QuoteAssetID=asset_id into v_del_count11;
+		SELECT Count(*) FROM  refmaster_internal_DEV.Stage_CollectedListing WHERE AssetID=asset_id into v_del_count12;
+		SELECT Count(*) FROM  refmaster_internal_DEV.Staging_CryptoNodeEvents WHERE AssetID=asset_id into v_del_count13;
+		SELECT Count(*) FROM  refmaster_internal_DEV.Staging_OutstandingSupply WHERE darAssetID=_DARAssetID  into v_del_count14;
+		-- CASCADING DELETE for immediate relations
+		IF( v_del_count2=0 and v_del_count3=0 and v_del_count4=0 and v_del_count5=0 and v_del_count6=0 and v_del_count8=0 and v_del_count9=0 and v_del_count10=0 and v_del_count11=0 and v_del_count12=0 and v_del_count13=0 and v_del_count14=0) Then
+			DELETE FROM refmaster_internal_DEV.AssetTheme WHERE AssetID=asset_id;
+			DELETE FROM refmaster_internal_DEV.AssetURL WHERE AssetID=asset_id;
+			DELETE FROM refmaster_internal_DEV.Asset WHERE ID=asset_id;
+            INSERT INTO refmaster_internal_DEV.Asset_Audit( operation, ID, DARAssetID, DARTicker, Name, AssetType, IsActive, CreateUser, LastEditUser, CreateTime, LastEditTime, Description, Sponsor, IsBenchmarkAsset, SEDOL, ISIN, CUSIP, DTI, DevelopmentStage, MessariTaxonomySector, MessariTaxonomyCategory, DARSuperSector, DARSuperSectorCode, DARSector, DARSectorCode, DARSubSector, DARSubSectorCode, DarTaxonomyVersion, IssuanceFramework, IsRestricted, EstimatedCirculatingSupply, MaxSupply, LegacyId, LegacyDARAssetId, InstitutionalCustodyAvailable, DATSSuperSector, DATSSuperSectorCode, DATSSector, DATSSectorCode, DATSSubSector, DATSSubSectorCode, DATSTaxonomyVersion, HasERC20Version, HasNYDFSCustoday, CMC_ID, CG_ID, CirculatingSupply)
+            SELECT "DELETE", ID, DARAssetID, DARTicker, Name, AssetType, IsActive, CreateUser, LastEditUser, CreateTime, LastEditTime, Description, Sponsor, IsBenchmarkAsset, SEDOL, ISIN, CUSIP, DTI, DevelopmentStage, MessariTaxonomySector, MessariTaxonomyCategory, DARSuperSector, DARSuperSectorCode, DARSector, DARSectorCode, DARSubSector, DARSubSectorCode, DarTaxonomyVersion, IssuanceFramework, IsRestricted, EstimatedCirculatingSupply, MaxSupply, LegacyId, LegacyDARAssetId, InstitutionalCustodyAvailable, DATSSuperSector, DATSSuperSectorCode, DATSSector, DATSSectorCode, DATSSubSector, DATSSubSectorCode, DATSTaxonomyVersion, HasERC20Version, HasNYDFSCustoday, CMC_ID, CG_ID, CirculatingSupply FROM refmaster_internal_DEV.Asset_Audit WHERE DARAssetID=_DARAssetID and operation = "INSERT";
+            COMMIT;
+			ECHO SELECT _DARAssetID as "ID", 'Success' as RowOutput ;
+		ELSEIF v_del_count2 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT ClientAssets FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		ELSEIF v_del_count3 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT AssetToken FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		ELSEIF v_del_count4 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT AssetVettingStatus FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		ELSEIF v_del_count5 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT AssetAvailability FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		ELSEIF v_del_count6 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT AssetCustodian FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		ELSEIF v_del_count8 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT EventInformation FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		ELSEIF v_del_count9 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT Listing FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		ELSEIF v_del_count10 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT Pair FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))"AS msg;
+		ELSEIF v_del_count11 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT Pair FOREIGN KEY ('QuoteAssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		ELSEIF v_del_count12 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT Stage_CollectedListing FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		ELSEIF v_del_count13 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT Staging_CryptoNodeEvents FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		ELSEIF v_del_count14 !=0 Then
+			ECHO SELECT "Cannot add or update a child row: a foreign key constraint fails( CONSTRAINT Staging_OutstandingSupply FOREIGN KEY ('AssetID') REFERENCES 'Asset' ('Id'))" AS msg;
+		END IF;
+END;$$
+DELIMITER ;
+
+ 
