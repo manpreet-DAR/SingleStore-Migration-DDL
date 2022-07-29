@@ -1,40 +1,38 @@
-use refmaster_internal_DEV;
+use refmaster_internal;
 DELIMITER //
 CREATE OR REPLACE PROCEDURE spDMLOutstandingSupply(
 _OPERATION VARCHAR(20),
 _OutstandingSupply DECIMAL(18, 0),
-_AssetID BIGINT(16),
+_DARAssetID VARCHAR(20),
 _ProcessID BIGINT(16),
-_ID BIGINT(16) DEFAULT 0,
-_IsActive TINYINT DEFAULT 1,
-_Reviewed TINYINT DEFAULT NULL)RETURNS text AS
+_Reviewed TINYINT DEFAULT FALSE)RETURNS text AS
 	DECLARE 
 		v_count INT =0;
-        v_id BIGINT(16) =  _ID;
+        v_id BIGINT(16)=_DARAssetID; 
         v_date DATETIME = CURRENT_TIMESTAMP();
        
         BEGIN
-            SELECT Count(*) FROM OutstandingSupply WHERE ID=_ID into v_count;
+            SELECT Count(*) FROM OutstandingSupply WHERE darAssetID=_DARAssetID AND ProcessID=_ProcessID INTO v_count;
             SELECT NOW() into v_date;
             If (UPPER(_OPERATION) = "UPSERT") Then
 				IF(v_count = 0) Then
-					INSERT INTO OutstandingSupply( OutstandingSupply, AssetID, ProcessID, CollectedTimeStamp, IsActive, Reviewed)
-                    values( _OutstandingSupply,_AssetID, _ProcessID,v_date,_IsActive, _Reviewed);
+					INSERT INTO OutstandingSupply( OutstandingSupply, darAssetID, ProcessID, CollectedTimeStamp, LoadTimeStamp, Reviewed)
+                    VALUES(_OutstandingSupply,_AssetID, _ProcessID,v_date,v_date, _Reviewed);
 					COMMIT;
-                    SELECT ID FROM OutstandingSupply WHERE OutstandingSupply=_OutstandingSupply and AssetID=_AssetID and ProcessID=_ProcessID and CollectedTimeStamp=v_date and IsActive=_IsActive into v_id;
-                    ECHO SELECT v_id as "ID" , 'Data Inserted';
-   
+                    SELECT ID FROM OutstandingSupply 
+                    WHERE OutstandingSupply=_OutstandingSupply 
+                    AND darAssetID=_DARAssetID AND ProcessID=_ProcessID AND CollectedTimeStamp=v_date into v_id;
+                    ECHO SELECT 'Insert' AS RowOutput;
 				ELSEIF(v_count = 1) Then
-						UPDATE OutstandingSupply SET OutstandingSupply=_OutstandingSupply, AssetID=_AssetID, ProcessID=_ProcessID, CollectedTimeStamp=v_date, IsActive=_IsActive , Reviewed=_Reviewed WHERE ID=_ID;
-						ECHO SELECT  v_id as "ID", 'Data  Updated';
+						UPDATE OutstandingSupply SET OutstandingSupply=_OutstandingSupply, darAssetID=_DARAssetID, ProcessID=_ProcessID, CollectedTimeStamp=v_date, IsActive=_IsActive , Reviewed=_Reviewed WHERE ID=_ID;
+						ECHO SELECT 'Update' AS RowOutput;
 				ELSEIF(v_count > 1) Then
-					ECHO SELECT  'Duplicate Date found!!!';
+					ECHO SELECT  'Cannot add or update row: ER_DUP_ENTRY_WITH_KEY_NAME' AS RowOutput;
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				
-                DELETE FROM OutstandingSupply WHERE ID=_ID;
+                DELETE FROM OutstandingSupply WHERE darAssetID = _DARAssetID AND _ProcessID=_ProcessID;
 				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ECHO SELECT 'Delete' AS RowOutput;
 			END IF;
             Return v_id;
 END //

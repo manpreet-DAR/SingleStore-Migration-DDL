@@ -1,15 +1,13 @@
-use refmaster_internal_DEV;
+use refmaster_internal;
 DELIMITER //
 CREATE OR REPLACE PROCEDURE spDMLStaging_OutstandingSupply(
 _OPERATION VARCHAR(20),
-_SourceId INT,
-_AssetID INT,
+_SourceId BIGINT,
+_darAssetID VARCHAR(20),
 _ProcessID INT,
 _OutstandingSupply DECIMAL(18, 0),
-_ID BIGINT(16) DEFAULT 0,
 _Error VARCHAR(500) DEFAULT NULL,
 _PassedValidation TINYINT DEFAULT NULL,
-_IsActive TINYINT DEFAULT 1,
 _Reviewed TINYINT DEFAULT NULL,
 _OutstandingSupplyReviewed DECIMAL(18, 0) DEFAULT NULL,
 _BaseDataAvailable TINYINT DEFAULT NULL
@@ -17,31 +15,33 @@ _BaseDataAvailable TINYINT DEFAULT NULL
 	DECLARE 
 		v_count INT =0;
         v_date DATETIME = CURRENT_TIMESTAMP();
-        v_id BIGINT(16) =  _ID;
+        v_id BIGINT(16) = _darAssetID ;
        
         BEGIN
-            SELECT Count(*) FROM Staging_OutstandingSupply WHERE ID=_ID into v_count;
+            SELECT Count(*) INTO v_count FROM Staging_OutstandingSupply 
+            WHERE darAssetID =_darAssetID AND ProcessID=_ProcessID AND SourceId=_SourceId;
             SELECT NOW() into v_date;
-            If (UPPER(_OPERATION) = "UPSERT") Then
+            If (UPPER(_OPERATION) = "UPSERT") then
 				IF(v_count = 0) Then
-					INSERT INTO Staging_OutstandingSupply( SourceId, AssetID,ProcessID,OutstandingSupply,Error,CollectedTimeStamp, PassedValidation,IsActive,Reviewed,OutstandingSupplyReviewed,BaseDataAvailable)
-                    values( _SourceId, _AssetID, _ProcessID,_OutstandingSupply,_Error,v_date, _PassedValidation,_IsActive, _Reviewed,_OutstandingSupplyReviewed,_BaseDataAvailable);
+					INSERT INTO Staging_OutstandingSupply( SourceId,darAssetID,ProcessID,OutstandingSupply,Error,CollectedTimeStamp, PassedValidation,Reviewed,OutstandingSupplyReviewed,BaseDataAvailable)
+                    values( _SourceId, _darAssetID, _ProcessID,_OutstandingSupply,_Error,v_date, _PassedValidation,_Reviewed,_OutstandingSupplyReviewed,_BaseDataAvailable);
 					COMMIT;
-                    SELECT ID FROM Staging_OutstandingSupply WHERE SourceId=_SourceId and  AssetID=_AssetID and ProcessID=_ProcessID and OutstandingSupply=_OutstandingSupply and CollectedTimeStamp=v_date into v_id;
-                    ECHO SELECT v_id as "ID" , 'Data Inserted';
+                    ECHO SELECT "Insert" AS RowOutput;
    
 				ELSEIF(v_count = 1) Then
-						UPDATE Staging_OutstandingSupply SET SourceId=_SourceId, AssetID=_AssetID ,ProcessID=_ProcessID  ,OutstandingSupply=_OutstandingSupply ,Error=_Error,PassedValidation=_PassedValidation,IsActive=_IsActive,
-                        Reviewed=_Reviewed, OutstandingSupplyReviewed=_OutstandingSupplyReviewed, BaseDataAvailable=_BaseDataAvailable WHERE ID=_ID;
-						ECHO SELECT  v_id as "ID", 'Data  Updated';
+						UPDATE Staging_OutstandingSupply SET SourceId=_SourceId, ProcessID=_ProcessID, OutstandingSupply=_OutstandingSupply ,Error=_Error,PassedValidation=_PassedValidation,IsActive=_IsActive,
+                        Reviewed=_Reviewed, OutstandingSupplyReviewed=_OutstandingSupplyReviewed, BaseDataAvailable=_BaseDataAvailable WHERE 
+                        (darAssetID =_darAssetID AND ProcessID=_ProcessID AND SourceId=_SourceId);
+						ECHO SELECT "Update" as RowOutput;
                         
 				ELSEIF(v_count > 1) Then
-					ECHO SELECT  'Duplicate Date found!!!';
+					ECHO SELECT 'Duplicate Key Error' as RowOutput;
                 END IF;
 			ELSEIF(UPPER(_OPERATION) = "DELETE") Then
-				DELETE FROM Staging_OutstandingSupply WHERE ID=_ID;
+				DELETE FROM Staging_OutstandingSupply 
+                WHERE darAssetID =_darAssetID AND ProcessID=_ProcessID AND SourceId=_SourceId;
 				COMMIT;
-				ECHO SELECT  v_id as "ID", 'Data Deleted';
+				ECHO SELECT "Delete" as RowOutput;
 			END IF;
             Return v_id;
 END //
