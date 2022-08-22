@@ -10,8 +10,6 @@ a.ID
 , a.Description
 , Sponsor
 , IsBenchmarkAsset
-, GovernanceToken
-, LayerOne
 , SEDOL
 , ISIN
 , CUSIP

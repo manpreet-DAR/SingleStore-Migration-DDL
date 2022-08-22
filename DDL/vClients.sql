@@ -1,4 +1,5 @@
-CREATE VIEW vClientAssets1
+DROP VIEW vClientAssets; 
+CREATE VIEW vClientAssets
 AS
 select
         ca.ID as ID
@@ -16,7 +17,8 @@ select
 	, c.LatestPrice
     , c.Derivatives
 	, c.NFT
-from Clients1 c
+from Clients c
 inner join ClientIPs ip on c.ID = ip.ClientID
-inner join ClientAssets1 ca on c.ID = ca.ClientID
+inner join ClientAssets ca on c.ID = ca.ClientID
 inner join Asset a on a.ID = ca.AssetID;
+
