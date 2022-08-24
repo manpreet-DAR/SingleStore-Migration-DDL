@@ -54,6 +54,8 @@ a.ID
 , a.LegacyDARAssetId
 , a.CirculatingSupply
 , a.LegacyId
+, a.GovernanceToken
+, a.LayerOne
 FROM Asset a
 LEFT JOIN (
 	SELECT
